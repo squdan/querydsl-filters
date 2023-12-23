@@ -9,4 +9,15 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, UUID>, QueryDslRepository<UserEntity, EntityPathBase<UserEntity>> {
 
+    // Configuration
+    QueryDslRolesTypeManager CUSTOM_TYPES = new QueryDslRolesTypeManager();
+
+    default QueryDslRolesTypeManager getCustomTypesManager() {
+        return CUSTOM_TYPES;
+    }
+
+    default Class<UserEntity> getEntityType() {
+        return UserEntity.class;
+    }
+
 }

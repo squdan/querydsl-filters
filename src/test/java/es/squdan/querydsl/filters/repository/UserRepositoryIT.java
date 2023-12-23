@@ -2,6 +2,9 @@ package es.squdan.querydsl.filters.repository;
 
 import es.squdan.querydsl.filters.QueryDslFilter;
 import es.squdan.querydsl.filters.QueryDslOperators;
+import es.squdan.querydsl.filters.configuration.DatabaseTestConfiguration;
+import es.squdan.querydsl.filters.configuration.TestQueryDslFiltersApplication;
+import es.squdan.querydsl.filters.util.DateTimeUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,12 +17,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-@SpringBootTest(classes = {TestQueryDslFiltersApplication.class, UserRepository.class})
+@SpringBootTest(classes = {TestQueryDslFiltersApplication.class, DatabaseTestConfiguration.class, UserRepository.class})
 @ExtendWith(SpringExtension.class)
 public class UserRepositoryIT {
 
@@ -32,14 +36,16 @@ public class UserRepositoryIT {
             .role(Roles.ADMIN)
             .name("Admin Name")
             .lastName("Admin Lastname")
-            .savings(new BigDecimal("35.5"))
+            .savings(new BigDecimal("35.50"))
+            .createdOn(DateTimeUtils.toInstantUtc("2020-06-14T00:00:00Z"))
+            .lastUpdatedOn(DateTimeUtils.toInstantUtc("2021-11-27T16:41:32Z"))
             .build();
     private static final UserEntity USER = UserEntity.builder()
             .id(UUID.fromString("26ad7565-ba11-4914-bf91-84557b8b8764"))
             .username("user")
             .password("test")
             .role(Roles.USER)
-            .name("Use Name")
+            .name("User Name")
             .build();
 
     // Class to test
@@ -48,28 +54,90 @@ public class UserRepositoryIT {
 
     private static Stream<Arguments> provideSingleFilterTestCases() {
         return Stream.of(
+                // Is null
                 Arguments.of(new QueryDslFilter("lastName", QueryDslOperators.IS_NULL_FUNCTION), List.of(USER)),
+
+                // Not null
                 Arguments.of(new QueryDslFilter("username", QueryDslOperators.NON_NULL_FUNCTION), List.of(ADMIN, USER)),
+
+                // Equals
                 Arguments.of(new QueryDslFilter("name", QueryDslOperators.EQUALS, ADMIN.getName()), List.of(ADMIN)),
                 Arguments.of(new QueryDslFilter("role", QueryDslOperators.EQUALS_FUNCTION, Roles.USER), List.of(USER)),
                 Arguments.of(new QueryDslFilter("id", QueryDslOperators.EQUALS_FUNCTION_EQ, ADMIN.getId()), List.of(ADMIN)),
+
+                // Not equals
                 Arguments.of(new QueryDslFilter("password", QueryDslOperators.NOT_EQUALS, "unknown"), List.of(ADMIN, USER)),
                 Arguments.of(new QueryDslFilter("id", QueryDslOperators.NON_EQUALS_FUNCTION, "e4cc6317-3197-4bed-9707-978bb9d54630"), List.of(ADMIN, USER)),
-                Arguments.of(new QueryDslFilter("id", QueryDslOperators.NON_EQUALS_FUNCTION_NE, ADMIN.getId()), List.of(USER)),
+                Arguments.of(new QueryDslFilter("role", QueryDslOperators.NON_EQUALS_FUNCTION_NE, Roles.ADMIN), List.of(USER)),
+
+                // Starts with (String)
                 Arguments.of(new QueryDslFilter("name", QueryDslOperators.STARTS_WITH_FUNCTION, "Adm"), List.of(ADMIN)),
                 Arguments.of(new QueryDslFilter("name", QueryDslOperators.STARTS_WITH_FUNCTION_SW, "Us"), List.of(USER)),
+
+                // Ends with (String)
                 Arguments.of(new QueryDslFilter("name", QueryDslOperators.ENDS_WITH_FUNCTION, "me"), List.of(ADMIN, USER)),
-                Arguments.of(new QueryDslFilter("name", QueryDslOperators.ENDS_WITH_FUNCTION_EW, "Admin Name"), List.of(USER)),
+                Arguments.of(new QueryDslFilter("name", QueryDslOperators.ENDS_WITH_FUNCTION_EW, "dmin Name"), List.of(ADMIN)),
+
+                // Contains (String)
                 Arguments.of(new QueryDslFilter("lastName", QueryDslOperators.CONTAIN_FUNCTION, "min"), List.of(ADMIN)),
                 Arguments.of(new QueryDslFilter("username", QueryDslOperators.CONTAIN_FUNCTION_C, "user"), List.of(USER)),
-                Arguments.of(new QueryDslFilter("name", QueryDslOperators.CONTAINS_FUNCTION_LIKE, "anm"), List.of(ADMIN, USER)),
-                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.GREATER_THAN, "30.1"), List.of(ADMIN)),
+                Arguments.of(new QueryDslFilter("name", QueryDslOperators.CONTAINS_FUNCTION_LIKE, "am"), List.of(ADMIN, USER)),
+
+                // Greater than (Numbers)
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.GREATER_THAN, "35.4"), List.of(ADMIN)),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.GREATER_THAN, "35.5"), CollectionUtils.emptyCollection()),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.GREATER_THAN, "35.6"), CollectionUtils.emptyCollection()),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.GREATER_THAN_FUNCTION_GT, "35.4"), List.of(ADMIN)),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.GREATER_THAN_FUNCTION_GT, "35.5"), CollectionUtils.emptyCollection()),
                 Arguments.of(new QueryDslFilter("savings", QueryDslOperators.GREATER_THAN_FUNCTION_GT, "35.6"), CollectionUtils.emptyCollection()),
+
+                // Greater than (Dates)
+                Arguments.of(new QueryDslFilter("createdOn", QueryDslOperators.GREATER_THAN, ADMIN.getCreatedOn().minus(1, ChronoUnit.DAYS)), List.of(ADMIN, USER)),
+                Arguments.of(new QueryDslFilter("createdOn", QueryDslOperators.GREATER_THAN, ADMIN.getCreatedOn()), List.of(USER)),
+                Arguments.of(new QueryDslFilter("createdOn", QueryDslOperators.GREATER_THAN_FUNCTION_GT, NOW.minus(1, ChronoUnit.HOURS)), List.of(USER)),
+                Arguments.of(new QueryDslFilter("createdOn", QueryDslOperators.GREATER_THAN_FUNCTION_GT, NOW.plus(1, ChronoUnit.DAYS)), CollectionUtils.emptyCollection()),
+
+                // Greater than or equals (Numbers)
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.GREATER_THAN_OR_EQUALS, "35.4"), List.of(ADMIN)),
                 Arguments.of(new QueryDslFilter("savings", QueryDslOperators.GREATER_THAN_OR_EQUALS, "35.5"), List.of(ADMIN)),
-                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.GREATER_THAN_OR_EQUALS_FUNCTION_GTE, "51"), CollectionUtils.emptyCollection()),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.GREATER_THAN_OR_EQUALS, "35.6"), CollectionUtils.emptyCollection()),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.GREATER_THAN_OR_EQUALS_FUNCTION_GTE, "35.4"), List.of(ADMIN)),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.GREATER_THAN_OR_EQUALS_FUNCTION_GTE, "35.5"), List.of(ADMIN)),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.GREATER_THAN_OR_EQUALS_FUNCTION_GTE, "35.6"), CollectionUtils.emptyCollection()),
+
+                // Greater than or equals (Dates)
+                Arguments.of(new QueryDslFilter("createdOn", QueryDslOperators.GREATER_THAN_OR_EQUALS, ADMIN.getCreatedOn().minus(1, ChronoUnit.DAYS)), List.of(ADMIN, USER)),
+                Arguments.of(new QueryDslFilter("createdOn", QueryDslOperators.GREATER_THAN_OR_EQUALS, ADMIN.getCreatedOn()), List.of(ADMIN, USER)),
+                Arguments.of(new QueryDslFilter("createdOn", QueryDslOperators.GREATER_THAN_OR_EQUALS_FUNCTION_GTE, NOW.minus(1, ChronoUnit.HOURS)), List.of(USER)),
+                Arguments.of(new QueryDslFilter("createdOn", QueryDslOperators.GREATER_THAN_OR_EQUALS_FUNCTION_GTE, NOW.plus(1, ChronoUnit.DAYS)), CollectionUtils.emptyCollection()),
+
+                // Lower than (Numbers)
                 Arguments.of(new QueryDslFilter("savings", QueryDslOperators.LOWER_THAN, "35.6"), List.of(ADMIN)),
-                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.LOWER_THAN_FUNCTION_LT, "35.45"), CollectionUtils.emptyCollection()),
-                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.LOWER_THAN_OR_EQUALS_FUNCTION_LTE, "35.5"), List.of(ADMIN))
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.LOWER_THAN, "35.5"), CollectionUtils.emptyCollection()),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.LOWER_THAN, "35.4"), CollectionUtils.emptyCollection()),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.LOWER_THAN_FUNCTION_LT, "35.6"), List.of(ADMIN)),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.LOWER_THAN_FUNCTION_LT, "35.5"), CollectionUtils.emptyCollection()),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.LOWER_THAN_FUNCTION_LT, "35.4"), CollectionUtils.emptyCollection()),
+
+                // Lower than (Dates)
+                Arguments.of(new QueryDslFilter("lastUpdatedOn", QueryDslOperators.LOWER_THAN, ADMIN.getLastUpdatedOn().plus(1, ChronoUnit.DAYS)), List.of(ADMIN)),
+                Arguments.of(new QueryDslFilter("lastUpdatedOn", QueryDslOperators.LOWER_THAN, ADMIN.getLastUpdatedOn()), CollectionUtils.emptyCollection()),
+                Arguments.of(new QueryDslFilter("lastUpdatedOn", QueryDslOperators.LOWER_THAN_FUNCTION_LT, NOW.plus(1, ChronoUnit.HOURS)), List.of(ADMIN, USER)),
+                Arguments.of(new QueryDslFilter("lastUpdatedOn", QueryDslOperators.LOWER_THAN_FUNCTION_LT, NOW.minus(1, ChronoUnit.DAYS)), List.of(ADMIN)),
+
+                // Lower than or equals (Numbers)
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.LOWER_THAN_OR_EQUALS, "35.6"), List.of(ADMIN)),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.LOWER_THAN_OR_EQUALS, "35.5"), List.of(ADMIN)),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.LOWER_THAN_OR_EQUALS, "35.4"), CollectionUtils.emptyCollection()),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.LOWER_THAN_OR_EQUALS_FUNCTION_LTE, "35.6"), List.of(ADMIN)),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.LOWER_THAN_OR_EQUALS_FUNCTION_LTE, "35.5"), List.of(ADMIN)),
+                Arguments.of(new QueryDslFilter("savings", QueryDslOperators.LOWER_THAN_OR_EQUALS_FUNCTION_LTE, "35.4"), CollectionUtils.emptyCollection()),
+
+                // Lower than or equals (Dates)
+                Arguments.of(new QueryDslFilter("lastUpdatedOn", QueryDslOperators.LOWER_THAN_OR_EQUALS, ADMIN.getLastUpdatedOn().plus(1, ChronoUnit.DAYS)), List.of(ADMIN)),
+                Arguments.of(new QueryDslFilter("lastUpdatedOn", QueryDslOperators.LOWER_THAN_OR_EQUALS, ADMIN.getLastUpdatedOn()), List.of(ADMIN)),
+                Arguments.of(new QueryDslFilter("lastUpdatedOn", QueryDslOperators.LOWER_THAN_OR_EQUALS_FUNCTION_LTE, NOW.plus(1, ChronoUnit.HOURS)), List.of(ADMIN, USER)),
+                Arguments.of(new QueryDslFilter("lastUpdatedOn", QueryDslOperators.LOWER_THAN_OR_EQUALS_FUNCTION_LTE, NOW.minus(1, ChronoUnit.DAYS)), List.of(ADMIN))
         );
     }
 

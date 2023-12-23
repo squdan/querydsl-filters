@@ -1,14 +1,12 @@
-package es.squdan.querydsl.filters.repository;
+package es.squdan.querydsl.filters.configuration;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.TimeZone;
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "es.squdan")
 @ComponentScan(basePackages = "es.squdan")
 public class TestQueryDslFiltersApplication {
 
@@ -16,6 +14,7 @@ public class TestQueryDslFiltersApplication {
         // Configure default timezone
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
+        // Run app for testing
         new SpringApplicationBuilder(TestQueryDslFiltersApplication.class).run(args);
     }
 }

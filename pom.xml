@@ -57,6 +57,14 @@
             <classifier>jakarta</classifier>
         </dependency>
 
+        <!-- Manual QueryDsl entities generator -->
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-codegen</artifactId>
+            <version>${querydsl.version}</version>
+        </dependency>
+
+        <!-- Spring: Rest HttpStatus -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
@@ -149,6 +157,69 @@
                         <configuration>
                             <outputDirectory>target/generated-sources/java</outputDirectory>
                             <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- This plugin executes should QueryDslEntityTestGenerator to generate QEntity from tests package -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>build-test-environment</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>java</goal> <!-- exec / java -->
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <classpathScope>test</classpathScope>
+                    <mainClass>es.squdan.querydsl.filters.configuration.QueryDslEntityTestGenerator</mainClass>
+                </configuration>
+            </plugin>
+
+            <!-- This plugin should generate QEntity from tests package, but still not supporting Jakarta -->
+            <!--<plugin>
+                <groupId>com.querydsl</groupId>
+                <artifactId>querydsl-maven-plugin</artifactId>
+                <version>${querydsl.version}</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>jpa-export</goal>
+                        </goals>
+                        <configuration>
+                            <testClasspath>true</testClasspath>
+                            <targetFolder>target/generated-sources/java</targetFolder>
+                            <packages>
+                                <package>es.squdan.querydsl.filters.repository</package>
+                            </packages>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin> -->
+
+            <!-- Plugin to add generated-test-sources (QueryDsl Entities from tests) -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>target/generated-test-sources/java</source>
+                            </sources>
                         </configuration>
                     </execution>
                 </executions>

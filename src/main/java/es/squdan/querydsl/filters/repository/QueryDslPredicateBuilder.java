@@ -2,14 +2,12 @@ package es.squdan.querydsl.filters.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.PathBuilder;
 import es.squdan.querydsl.filters.QueryDslFilter;
 import es.squdan.querydsl.filters.QueryDslFiltersException;
 import es.squdan.querydsl.filters.QueryDslOperators;
-import es.squdan.querydsl.filters.repository.type.*;
+import es.squdan.querydsl.filters.repository.type.QueryDslTypeManager;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,28 +29,22 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class QueryDslPredicateBuilder<T> {
 
-    // Configuration - Type Managers
-    private static final QueryDslDateTypeManager QUERY_DSL_DATE_TYPE_MANAGER = new QueryDslDateTypeManager();
-    private static final QueryDslNumberTypeManager QUERY_DSL_NUMBER_TYPE_MANAGER = new QueryDslNumberTypeManager();
-    private static final QueryDslUuidTypeManager QUERY_DSL_UUID_TYPE_MANAGER = new QueryDslUuidTypeManager();
-    private static final QueryDslStringTypeManager QUERY_DSL_STRING_TYPE_MANAGER = new QueryDslStringTypeManager();
+    // Private configuration
+    private final QueryDslPredicateFactory queryDslPredicateFactory = new QueryDslPredicateFactory();
 
-    // Data
+    // Required configuration
     private final Class<T> entityType;
     private final List<QueryDslFilter> queryDslFilters = new ArrayList<>();
-
-    // Optional configuration
-    private QueryDslCustomTypeManager customTypesManager;
 
     /**
      * Some entities may own custom field types like Enums. Using QueryDslCustomTypesManager you can implement your own
      * types management.
      *
-     * @param customTypesManager: implementation of {@link QueryDslCustomTypeManager} to manage filters of custom types.
+     * @param customTypesManager: implementation of {@link QueryDslTypeManager} to manage filters of custom types.
      * @return QueryDslPredicateBuilder.
      */
-    public QueryDslPredicateBuilder<T> addCustomTypesManager(@NotNull final QueryDslCustomTypeManager customTypesManager) {
-        this.customTypesManager = customTypesManager;
+    public QueryDslPredicateBuilder<T> addCustomTypeManager(@NotNull final QueryDslTypeManager customTypesManager) {
+        queryDslPredicateFactory.addCustomTypeManager(customTypesManager);
         return this;
     }
 
@@ -116,7 +108,7 @@ public class QueryDslPredicateBuilder<T> {
             // Process QueryDsl filters to convert into Predicates
             final List<BooleanExpression> predicates = queryDslFilters.stream()
                     .filter(Objects::nonNull)
-                    .map(filter -> (new PredicateGenerator(entityType, filter)).getPredicate())
+                    .map(filter -> queryDslPredicateFactory.getPredicate(entityType, filter))
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
@@ -134,55 +126,5 @@ public class QueryDslPredicateBuilder<T> {
         }
 
         return result;
-    }
-
-    @AllArgsConstructor
-    private class PredicateGenerator {
-
-        private Class<T> entityType;
-        private QueryDslFilter filter;
-
-        public BooleanExpression getPredicate() {
-            BooleanExpression result = null;
-            PathBuilder<T> entityPath = new PathBuilder<T>(entityType, getEntityName());
-
-            // Manage custom types configured by App
-            if (Objects.nonNull(customTypesManager) && customTypesManager.isAsignable(filter)) {
-                result = customTypesManager.manage(entityPath, filter);
-            }
-
-            // Manage Dates
-            else if (QUERY_DSL_DATE_TYPE_MANAGER.isAsignable(filter)) {
-                result = QUERY_DSL_DATE_TYPE_MANAGER.manage(entityPath, filter);
-            }
-
-            // Manage Numbers
-            else if (QUERY_DSL_NUMBER_TYPE_MANAGER.isAsignable(filter)) {
-                result = QUERY_DSL_NUMBER_TYPE_MANAGER.manage(entityPath, filter);
-            }
-
-            // Manage UUIDs
-            else if (QUERY_DSL_UUID_TYPE_MANAGER.isAsignable(filter)) {
-                result = QUERY_DSL_UUID_TYPE_MANAGER.manage(entityPath, filter);
-            }
-
-            // Default: Manage as String
-            else {
-                result = QUERY_DSL_STRING_TYPE_MANAGER.manage(entityPath, filter);
-            }
-
-            return result;
-        }
-
-        private String getEntityName() {
-            String result = entityType.getSimpleName();
-
-            // Parse first letter to lower case
-            char[] c = result.toCharArray();
-            c[0] = Character.toLowerCase(c[0]);
-            result = new String(c);
-
-            return result;
-        }
     }
 }

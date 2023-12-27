@@ -5,36 +5,25 @@ import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.SimplePath;
 import es.squdan.querydsl.filters.QueryDslFilter;
 import es.squdan.querydsl.filters.QueryDslFiltersException;
-import es.squdan.querydsl.filters.repository.type.QueryDslCustomTypeManager;
+import es.squdan.querydsl.filters.repository.entity.Roles;
+import es.squdan.querydsl.filters.repository.type.QueryDslTypeManager;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Objects;
-
 @Slf4j
-public final class QueryDslRolesTypeManager implements QueryDslCustomTypeManager {
+public final class QueryDslRolesTypeManager implements QueryDslTypeManager {
 
-    public boolean isAsignable(final QueryDslFilter filter) {
-        return Objects.nonNull(getCustomType(filter));
+    public <T> boolean isSupported(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
+        return Roles.class.isAssignableFrom(getTypeFrom(entityType, filter.getKey()));
     }
 
-    public <T> BooleanExpression manage(final PathBuilder<T> entityPath, final QueryDslFilter filter) {
+    public <T> BooleanExpression manage(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
         BooleanExpression result = null;
 
         // Select custom value type to execute
-        final Class<?> valueType = getCustomType(filter);
+        final Class<?> valueType = getTypeFrom(entityType, filter.getKey());
 
         if (Roles.class == valueType) {
             result = manageRoles(entityPath, filter);
-        }
-
-        return result;
-    }
-
-    private Class<?> getCustomType(final QueryDslFilter filter) {
-        Class<?> result = null;
-
-        if (filter.getKey().equals("role") && Roles.isRoleValue(filter.getValue())) {
-            result = Roles.class;
         }
 
         return result;

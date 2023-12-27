@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 public final class QueryDslFiltersMapper {
 
     // Configuration - Allowed characters
-    private static final String ALLOWED_CHARACTERS_KEYS = "[A-Za-z0-9._-]";
+    private static final String ALLOWED_CHARACTERS_KEYS = "[A-Za-z0-9._()-]";
     private static final String ALLOWED_CHARACTERS_VALUES = "[A-Za-z0-9.:_-]";
     private static final String ALLOWED_FUNCTION_SEPARATOR_CHARACTERS = "[,:;]";
 

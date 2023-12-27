@@ -24,3 +24,35 @@ VALUES (
     now(),
     now()
 );
+
+-- ############# Bank Accounts ############# --
+-- [NORMAL USER]
+INSERT INTO bank_accounts (bank, account, user_id, amount, created_on, last_updated_on)
+VALUES (
+    'bank_name',
+    'ES12 1234 1234 12 1234567891',
+    '26ad7565-ba11-4914-bf91-84557b8b8764',
+    4987.33,
+    now(),
+    now()
+);
+
+INSERT INTO bank_accounts (bank, account, user_id, amount, created_on, last_updated_on)
+VALUES (
+    'bank_name',
+    'ES12 1234 1234 12 1234567892',
+    '26ad7565-ba11-4914-bf91-84557b8b8764',
+    10,
+    now(),
+    now()
+);
+
+INSERT INTO bank_accounts (bank, account, user_id, amount, created_on, last_updated_on)
+VALUES (
+    'bank_name2',
+    'ES12 1234 1234 12 1234567891',
+    '26ad7565-ba11-4914-bf91-84557b8b8764',
+    10000.00,
+    now(),
+    now()
+);

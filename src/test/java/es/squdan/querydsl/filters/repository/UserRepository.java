@@ -1,6 +1,7 @@
 package es.squdan.querydsl.filters.repository;
 
 import com.querydsl.core.types.dsl.EntityPathBase;
+import es.squdan.querydsl.filters.repository.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

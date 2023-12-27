@@ -7,16 +7,14 @@ import es.squdan.querydsl.filters.QueryDslFilter;
 import es.squdan.querydsl.filters.QueryDslFiltersException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Objects;
-
 @Slf4j
-public final class QueryDslNumberTypeManager implements QueryDslCustomTypeManager {
+public final class QueryDslNumberTypeManager implements QueryDslTypeManager {
 
-    public boolean isAsignable(final QueryDslFilter filter) {
-        return isInteger(filter) || isDecimal(filter);
+    public <T> boolean isSupported(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
+        return Number.class.isAssignableFrom(getTypeFrom(entityType, filter.getKey()));
     }
 
-    public <T> BooleanExpression manage(final PathBuilder<T> entityPath, final QueryDslFilter filter) {
+    public <T> BooleanExpression manage(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
         BooleanExpression result = null;
 
         // Create field path
@@ -63,38 +61,6 @@ public final class QueryDslNumberTypeManager implements QueryDslCustomTypeManage
                 final String errorMsg = String.format("Operation '%s' not supported for type 'Number'.", filter.getOperator());
                 log.error(errorMsg);
                 throw new QueryDslFiltersException(errorMsg);
-        }
-
-        return result;
-    }
-
-    private boolean isInteger(final QueryDslFilter filter) {
-        boolean result = false;
-
-        if (Objects.nonNull(filter.getValue())) {
-            try {
-                Integer.parseInt(filter.getValue().toString());
-                result = true;
-            } catch (final NumberFormatException e) {
-                // Do nothing
-            }
-        }
-
-        return result;
-    }
-
-    private boolean isDecimal(final QueryDslFilter filter) {
-        boolean result = false;
-
-        if (Objects.nonNull(filter.getValue())) {
-            if (!isInteger(filter)) {
-                try {
-                    Double.parseDouble(filter.getValue().toString());
-                    result = true;
-                } catch (final NumberFormatException e) {
-                    // Do nothing
-                }
-            }
         }
 
         return result;

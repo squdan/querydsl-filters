@@ -1,4 +1,4 @@
-package es.squdan.querydsl.filters.repository;
+package es.squdan.querydsl.filters.repository.entity;
 
 import java.util.Objects;
 

@@ -7,28 +7,16 @@ import es.squdan.querydsl.filters.QueryDslFilter;
 import es.squdan.querydsl.filters.QueryDslFiltersException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
-public final class QueryDslUuidTypeManager implements QueryDslCustomTypeManager {
+public final class QueryDslUuidTypeManager implements QueryDslTypeManager {
 
-    public boolean isAsignable(final QueryDslFilter filter) {
-        boolean result = false;
-
-        if (Objects.nonNull(filter.getValue())) {
-            try {
-                UUID.fromString(filter.getValue().toString());
-                result = true;
-            } catch (final IllegalArgumentException e) {
-                // Do nothing
-            }
-        }
-
-        return result;
+    public <T> boolean isSupported(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
+        return UUID.class.isAssignableFrom(getTypeFrom(entityType, filter.getKey()));
     }
 
-    public <T> BooleanExpression manage(final PathBuilder<T> entityPath, final QueryDslFilter filter) {
+    public <T> BooleanExpression manage(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
         BooleanExpression result = null;
 
         // Create field path

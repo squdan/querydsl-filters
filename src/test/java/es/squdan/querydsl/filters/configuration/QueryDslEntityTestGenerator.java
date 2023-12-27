@@ -2,7 +2,7 @@ package es.squdan.querydsl.filters.configuration;
 
 import com.querydsl.codegen.GenericExporter;
 import com.querydsl.codegen.Keywords;
-import es.squdan.querydsl.filters.repository.UserEntity;
+import es.squdan.querydsl.filters.repository.entity.UserEntity;
 import jakarta.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

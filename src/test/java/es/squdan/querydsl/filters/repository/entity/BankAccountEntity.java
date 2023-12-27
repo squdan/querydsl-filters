@@ -1,4 +1,4 @@
-package es.squdan.querydsl.filters.repository;
+package es.squdan.querydsl.filters.repository.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,38 +11,24 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.UUID;
 
 @Data
 @Entity
 @Builder
-@Table(name = "users")
+@Table(name = "bank_accounts")
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity {
+public class BankAccountEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @EmbeddedId
+    private BankAccountId id;
 
-    @Column(nullable = false, unique = true)
-    private String username;
-
-    @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Roles role;
-
-    @Column(nullable = false)
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
     @Column
-    private String lastName;
-
-    @Column
-    private BigDecimal savings;
+    private BigDecimal amount;
 
     @CreationTimestamp(source = SourceType.DB)
     private Instant createdOn;

@@ -7,14 +7,14 @@ import es.squdan.querydsl.filters.QueryDslFilter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class QueryDslStringTypeManager implements QueryDslCustomTypeManager {
+public final class QueryDslStringTypeManager implements QueryDslTypeManager {
 
-    public boolean isAsignable(final QueryDslFilter filter) {
+    public <T> boolean isSupported(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
         // If no other QueryDslCustomTypesManager has managed the field, then it will be treated as String
         return true;
     }
 
-    public <T> BooleanExpression manage(final PathBuilder<T> entityPath, final QueryDslFilter filter) {
+    public <T> BooleanExpression manage(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
         BooleanExpression result = null;
 
         // Create field path

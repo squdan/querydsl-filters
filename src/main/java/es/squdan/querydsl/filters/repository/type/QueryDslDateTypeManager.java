@@ -9,26 +9,18 @@ import es.squdan.querydsl.filters.util.DateTimeUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
-import java.util.Objects;
+import java.time.temporal.Temporal;
+import java.util.Date;
 
 @Slf4j
-public final class QueryDslDateTypeManager implements QueryDslCustomTypeManager {
+public final class QueryDslDateTypeManager implements QueryDslTypeManager {
 
-    public boolean isAsignable(final QueryDslFilter filter) {
-        boolean result = false;
-
-        if (Objects.nonNull(filter.getValue())) {
-            final Instant date = DateTimeUtils.toInstantUtc(filter.getValue().toString());
-
-            if (Objects.nonNull(date)) {
-                result = true;
-            }
-        }
-
-        return result;
+    public <T> boolean isSupported(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
+        final Class<?> fieldType = getTypeFrom(entityType, filter.getKey());
+        return Temporal.class.isAssignableFrom(fieldType) || Date.class.isAssignableFrom(fieldType);
     }
 
-    public <T> BooleanExpression manage(final PathBuilder<T> entityPath, final QueryDslFilter filter) {
+    public <T> BooleanExpression manage(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
         BooleanExpression result = null;
 
         // Create field path

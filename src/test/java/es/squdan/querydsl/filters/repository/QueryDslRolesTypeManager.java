@@ -30,7 +30,7 @@ public final class QueryDslRolesTypeManager implements QueryDslTypeManager {
     }
 
     private <T> BooleanExpression manageRoles(final PathBuilder<T> entityPath, final QueryDslFilter filter) {
-        BooleanExpression result = null;
+        BooleanExpression result;
 
         // Create field path
         final SimplePath<Roles> path = entityPath.getSimple(filter.getKey(), Roles.class);

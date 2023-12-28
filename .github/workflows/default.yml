@@ -44,8 +44,12 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
       # Clean Compile
-      - name: Run clean compile
+      - name: Clean compile
         run: mvn clean compile
+
+      # Compile test sources for QueryDsl
+      - name: QueryDsl test sources compilation
+        run: mvn test -DskipTests
 
       # Run tests to validate the code
       - name: Run tests

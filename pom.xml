@@ -163,7 +163,7 @@
                 <executions>
                     <execution>
                         <id>build-test-environment</id>
-                        <phase>generate-test-sources</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>java</goal> <!-- exec / java -->
                         </goals>
@@ -171,7 +171,10 @@
                 </executions>
                 <configuration>
                     <classpathScope>test</classpathScope>
-                    <mainClass>es.squdan.querydsl.filters.configuration.QueryDslEntityTestGenerator</mainClass>
+                    <mainClass>es.squdan.querydsl.filters.configuration.QueryDslEntityManualGenerator</mainClass>
+                    <arguments>
+                        <argument>es.squdan.querydsl.filters.repository.entity.UserEntity</argument>
+                    </arguments>
                 </configuration>
             </plugin>
 

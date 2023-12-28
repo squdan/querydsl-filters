@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
-public class QueryDslFiltersMapperIT {
+public class QueryDslFiltersMapperITest {
 
     // Constants
     private static final String TEST_KEY = "test_key";

@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 
 @SpringBootTest(classes = {TestQueryDslFiltersApplication.class, DatabaseTestConfiguration.class, UserRepository.class})
 @ExtendWith(SpringExtension.class)
-public class UserRepositoryIT {
+public class UserRepositoryITest {
 
     // Constants
     private static final Instant NOW = Instant.now();

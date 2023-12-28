@@ -163,7 +163,7 @@
                 <executions>
                     <execution>
                         <id>build-test-environment</id>
-                        <phase>test</phase>
+                        <phase>generate-test-sources</phase>
                         <goals>
                             <goal>java</goal> <!-- exec / java -->
                         </goals>

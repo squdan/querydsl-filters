@@ -43,9 +43,13 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
+      # Clean Build
+      - name: Run clean build
+        run: mvn clean build
+
       # Run tests to validate the code
       - name: Run tests
-        run: mvn install --activate-profiles test
+        run: mvn test
 
       # If there are test errors, upload de reports
       - name: Upload test reports
@@ -54,6 +58,10 @@ jobs:
         with:
           name: test-reports
           path: './**/target/surefire-reports/'
+
+      # Install
+      - name: Run install
+        run: mvn install
 
       # Check code coverage
       #- name: Report coverage

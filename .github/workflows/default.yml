@@ -47,13 +47,24 @@ jobs:
       - name: Clean compile
         run: mvn clean compile
 
+      # Upload artifacto to avoid recompile
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: querydsl-filter
+          path: target/querydsl-filter.jar
+
       # Compile test sources for QueryDsl
       - name: QueryDsl test sources compilation
-        run: mvn test -DskipTests
+        run: |
+          cd target/querydsl-filter.jar
+          mvn test -DskipTests
 
       # Run tests to validate the code
       - name: Run tests
-        run: mvn test
+        run: |
+          cd target/querydsl-filter.jar
+          mvn test
 
       # If there are test errors, upload de reports
       - name: Upload test reports

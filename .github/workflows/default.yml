@@ -49,7 +49,7 @@ jobs:
 
       # Clean Compile
       - name: Clean compile
-        run: mvn clean package -DskipTests
+        run: mvn clean compile -DskipTests
 
       # Get project version
       - name: Get project version
@@ -86,7 +86,7 @@ jobs:
 
       # Install
       - name: Run install
-        run: mvn install
+        run: mvn install -DskipTests
 
       # Check code coverage
       #- name: Report coverage

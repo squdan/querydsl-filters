@@ -90,13 +90,6 @@ jobs:
           name: querydsl-filter
           path: target/${{ env.ARTIFACT_NAME }}-${{ steps.project-version.outputs.project_version }}.jar
 
-      # Check code coverage
-      #- name: Report coverage
-      #  if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-      #  env:
-      #    COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      #  run: mvn --batch-mode coveralls:report --activate-profiles all,travis
-
       # Deploy release into nexus repository
       #- name: Deploy release 🚀
       #  if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}

@@ -56,7 +56,7 @@ jobs:
         id: project-version
         run: |
           project_version=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
-          echo "name=project_version::$project_version" >> $GITHUB_OUTPUT
+          echo "project_version=$project_version" >> $GITHUB_OUTPUT
 
       # Run tests to validate the code
       - name: Run tests

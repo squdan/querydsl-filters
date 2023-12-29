@@ -84,11 +84,11 @@ jobs:
           path: target/site/jacoco/index.html
 
       # Upload artifact - so it's available in other jobs
-      #- name: Upload artifact
-      #  uses: actions/upload-artifact@v3
-      #  with:
-      #    name: querydsl-filter
-      #    path: target/${{ env.ARTIFACT_NAME }}-${{ steps.project-version.outputs.project_version }}.jar
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: querydsl-filter
+          path: target/${{ env.ARTIFACT_NAME }}-${{ steps.project-version.outputs.project_version }}.jar
 
       # Check code coverage
       #- name: Report coverage

@@ -47,9 +47,9 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
-      # Clean Compile
-      - name: Clean compile
-        run: mvn clean compile -DskipTests
+      # Clean package - Required to have available test-generated-sources at test step
+      - name: Clean package
+        run: mvn clean package -DskipTests
 
       # Get project version
       - name: Get project version
@@ -57,19 +57,6 @@ jobs:
         run: |
           project_version=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "::set-output name=project_version::$project_version"
-
-      # Upload artifact to avoid recompile
-      #- name: Upload artifact
-      #  uses: actions/upload-artifact@v3
-      #  with:
-      #    name: querydsl-filter
-      #    path: target/${{ env.ARTIFACT_NAME }}-${{ steps.project-version.outputs.project_version }}.jar
-
-      # Compile test sources for QueryDsl
-      #- name: QueryDsl test sources compilation
-      #  run: |
-      #    cd target/querydsl-filter.jar
-      #    mvn test -DskipTests
 
       # Run tests to validate the code
       - name: Run tests
@@ -83,6 +70,24 @@ jobs:
         with:
           name: test-reports
           path: './**/target/surefire-reports/'
+
+      # Generate coverage report
+      - name: Generate coverage report
+        run: mvn verify -DskipTests
+
+      # Publish coverage report
+      - name: Publish coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: target/site/jacoco/index.html
+
+      # Upload artifact - so it's available in other jobs
+      #- name: Upload artifact
+      #  uses: actions/upload-artifact@v3
+      #  with:
+      #    name: querydsl-filter
+      #    path: target/${{ env.ARTIFACT_NAME }}-${{ steps.project-version.outputs.project_version }}.jar
 
       # Install
       - name: Run install

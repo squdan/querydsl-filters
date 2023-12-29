@@ -73,7 +73,7 @@ jobs:
 
       # Generate coverage report
       - name: Generate coverage report
-        run: mvn verify -DskipTests
+        run: mvn org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:report
 
       # Publish coverage report
       - name: Publish coverage report

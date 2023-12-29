@@ -258,14 +258,13 @@
                 <version>${jacoco.version}</version>
                 <executions>
                     <execution>
-                        <id>jacoco-initialize</id>
+                        <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>jacoco-report-generation</id>
-                        <phase>verify</phase>
+                        <id>report</id>
                         <goals>
                             <goal>report</goal>
                         </goals>

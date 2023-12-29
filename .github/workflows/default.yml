@@ -55,8 +55,8 @@ jobs:
       - name: Get project version
         id: project-version
         run: |
-          project_version=$(grep -oP '(?<=<version>).*?(?=</version>)' pom.xml | head -1)
-          echo "::set-output name=project_version::$project_version"
+          project_version=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
+          echo "::set-output name=version::$project_version"
           echo "Recovered project version: ${{ steps.project-version.outputs.project_version }}"
           echo "Current path $GITHUB_WORKSPACE"
           ls $GITHUB_WORKSPACE

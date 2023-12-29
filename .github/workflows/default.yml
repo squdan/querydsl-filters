@@ -76,14 +76,14 @@ jobs:
       - name: Run install
         run: mvn install -DskipTests
 
-      # Publish coverage report
-      - name: Publish coverage report
+      # Upload coverage report
+      - name: Upload coverage report
         uses: actions/upload-artifact@v3
         with:
           name: coverage-report
           path: target/site/jacoco/index.html
 
-      # Upload artifact - so it's available in other jobs
+      # Upload artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:

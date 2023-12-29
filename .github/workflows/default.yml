@@ -77,7 +77,7 @@ jobs:
       # Run tests to validate the code
       - name: Run tests
         run: |
-          cd target/${{ env.ARTIFACT_NAME }}-${{ steps.project-version.outputs.project_version }}.jar
+          cd target
           mvn test
 
       # If there are test errors, upload de reports

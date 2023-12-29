@@ -57,16 +57,13 @@ jobs:
         run: |
           project_version=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "::set-output name=project_version::$project_version"
-          echo "Recovered project version: ${{ steps.project-version.outputs.project_version }}"
-          echo "Current path $GITHUB_WORKSPACE"
-          ls $GITHUB_WORKSPACE
 
-      # Upload artifacto to avoid recompile
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: querydsl-filter
-          path: target/${{ env.ARTIFACT_NAME }}-${{ steps.project-version.outputs.project_version }}.jar
+      # Upload artifact to avoid recompile
+      #- name: Upload artifact
+      #  uses: actions/upload-artifact@v3
+      #  with:
+      #    name: querydsl-filter
+      #    path: target/${{ env.ARTIFACT_NAME }}-${{ steps.project-version.outputs.project_version }}.jar
 
       # Compile test sources for QueryDsl
       #- name: QueryDsl test sources compilation

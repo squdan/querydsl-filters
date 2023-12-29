@@ -25,6 +25,10 @@ jobs:
     runs-on: ubuntu-latest
 
     # Job steps
+    env:
+      ARTIFACT_NAME: querydsl-filters
+
+    # Job steps
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
@@ -47,12 +51,22 @@ jobs:
       - name: Clean compile
         run: mvn clean package -DskipTests
 
+      # Get project version
+      - name: Get project version
+        id: project-version
+        run: |
+          project_version=$(grep -oP '(?<=<version>).*?(?=</version>)' pom.xml | head -1)
+          echo "::set-output name=project_version::$project_version"
+          echo "Recovered project version: ${{ steps.project-version.outputs.project_version }}"
+          echo "Current path $GITHUB_WORKSPACE"
+          ls $GITHUB_WORKSPACE
+
       # Upload artifacto to avoid recompile
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: querydsl-filter
-          path: target/querydsl-filter.jar
+          path: target/${{ env.ARTIFACT_NAME }}-${{ steps.project-version.outputs.project_version }}.jar
 
       # Compile test sources for QueryDsl
       #- name: QueryDsl test sources compilation
@@ -63,7 +77,7 @@ jobs:
       # Run tests to validate the code
       - name: Run tests
         run: |
-          cd target/querydsl-filter.jar
+          cd target/${{ env.ARTIFACT_NAME }}-${{ steps.project-version.outputs.project_version }}.jar
           mvn test
 
       # If there are test errors, upload de reports

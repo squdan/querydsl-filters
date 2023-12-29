@@ -77,7 +77,6 @@ jobs:
       # Run tests to validate the code
       - name: Run tests
         run: |
-          cd target
           mvn test
 
       # If there are test errors, upload de reports

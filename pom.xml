@@ -235,6 +235,12 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+            <!-- Plugin to recover project version at Github pipeline -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-help-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 </project>

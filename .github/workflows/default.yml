@@ -75,7 +75,7 @@ jobs:
 
       # Send coverage report to coveralls
       - name: Send coverage report to coveralls
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        #if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
           COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
         run:  |

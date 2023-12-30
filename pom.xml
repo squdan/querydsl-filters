@@ -12,7 +12,7 @@
     </parent>
 
     <!-- Maven coordinates -->
-    <groupId>es.squdan</groupId>
+    <groupId>io.github.squdan</groupId>
     <artifactId>querydsl-filters</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
@@ -217,9 +217,9 @@
                 </executions>
                 <configuration>
                     <classpathScope>test</classpathScope>
-                    <mainClass>es.squdan.querydsl.filters.configuration.QueryDslEntityManualGenerator</mainClass>
+                    <mainClass>configuration.io.github.squdan.querydsl.filters.QueryDslEntityManualGenerator</mainClass>
                     <arguments>
-                        <argument>es.squdan.querydsl.filters.repository.entity.UserEntity</argument>
+                        <argument>entity.repository.io.github.squdan.querydsl.filters.UserEntity</argument>
                     </arguments>
                 </configuration>
             </plugin>
@@ -239,7 +239,7 @@
                             <testClasspath>true</testClasspath>
                             <targetFolder>target/generated-sources/java</targetFolder>
                             <packages>
-                                <package>es.squdan.querydsl.filters.repository</package>
+                                <package>io.github.squdan.querydsl.filters.repository</package>
                             </packages>
                         </configuration>
                     </execution>

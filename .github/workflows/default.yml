@@ -27,6 +27,7 @@ jobs:
     # Job steps
     env:
       ARTIFACT_NAME: querydsl-filters
+      COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
 
     # Job steps
     steps:
@@ -57,6 +58,8 @@ jobs:
         run: |
           project_version=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "project_version=$project_version" >> $GITHUB_OUTPUT
+          echo Version detected: ${{ steps.project-version.outputs.project_version }}
+          echo Token configured: ${{ env.COVERALLS_TOKEN }}
 
       # Run tests to validate the code
       - name: Run tests
@@ -78,9 +81,7 @@ jobs:
 
       # Send coverage report to coveralls
       - name: Send coverage report
-        run:  |
-          set COVERALLS_TOKEN=${{ secrets.COVERALLS_TOKEN }}
-          mvn coveralls:report
+        run:  mvn coveralls:report
 
       # Upload coverage report
       - name: Upload coverage report

@@ -13,10 +13,6 @@ on:
     paths-ignore:
       - README.md
 
-# Variables
-env:
-  MAVEN_OPTS: -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-
 # Jobs to execute
 jobs:
   # Build: mvn build
@@ -27,7 +23,6 @@ jobs:
     # Job steps
     env:
       ARTIFACT_NAME: querydsl-filters
-      COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
 
     # Job steps
     steps:
@@ -59,10 +54,6 @@ jobs:
           project_version=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "project_version=$project_version" >> $GITHUB_OUTPUT
           echo Version detected: $project_version
-          echo Single braces secret: ${secrets.COVERALLS_TOKEN}
-          echo Single braces env: ${env.COVERALLS_TOKEN}
-          echo Double braces secret: ${{ secrets.COVERALLS_TOKEN }}
-          echo Double braces env: ${{ env.COVERALLS_TOKEN }}
 
       # Run tests to validate the code
       - name: Run tests
@@ -84,7 +75,14 @@ jobs:
 
       # Send coverage report to coveralls
       - name: Send coverage report to coveralls
-        run:  mvn coveralls:report
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        env:
+          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+        run:  |
+          echo Single braces env: ${env.COVERALLS_TOKEN}
+          echo Double braces secret: ${{ secrets.COVERALLS_TOKEN }}
+          echo Double braces env: ${{ env.COVERALLS_TOKEN }}
+          mvn --batch-mode coveralls:report
 
       # Upload coverage report
       - name: Upload coverage report

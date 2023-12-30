@@ -34,6 +34,9 @@
         <mapstruct.bindings.version>0.2.0</mapstruct.bindings.version>
         <apache.commons.collections4.version>4.4</apache.commons.collections4.version>
         <jacoco.version>0.8.11</jacoco.version>
+
+        <!-- Configurable by environment -->
+        <coveralls.token>${env.COVERALLS_TOKEN}</coveralls.token>
     </properties>
 
     <dependencies>
@@ -270,6 +273,16 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- Plugin to upload coverage to coveralls web -->
+            <plugin>
+                <groupId>com.github.hazendaz.maven</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>4.5.0-M2</version>
+                <configuration>
+                    <repoToken>${coveralls.token}</repoToken>
+                </configuration>
             </plugin>
         </plugins>
     </build>

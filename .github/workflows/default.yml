@@ -13,10 +13,6 @@ on:
     paths-ignore:
       - README.md
 
-# Variables
-env:
-  MAVEN_OPTS: -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-
 # Jobs to execute
 jobs:
   # Build: mvn build
@@ -57,6 +53,7 @@ jobs:
         run: |
           project_version=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "project_version=$project_version" >> $GITHUB_OUTPUT
+          echo Version detected: $project_version
 
       # Run tests to validate the code
       - name: Run tests
@@ -64,7 +61,7 @@ jobs:
           mvn test
 
       # If there are test errors, upload de reports
-      - name: Upload test reports
+      - name: Upload test error reports
         uses: actions/upload-artifact@v3
         if: failure()
         with:
@@ -76,18 +73,26 @@ jobs:
       - name: Run install
         run: mvn install -DskipTests
 
+      # Send coverage report to coveralls
+      - name: Send coverage report to coveralls
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        env:
+          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+        run:  |
+          mvn --batch-mode coveralls:report
+
       # Upload coverage report
       - name: Upload coverage report
         uses: actions/upload-artifact@v3
         with:
-          name: coverage-report
-          path: target/site/jacoco/index.html
+          name: jacoco-coverage-report
+          path: target/site/jacoco
 
       # Upload artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: querydsl-filter
+          name: querydsl-filter-${{ steps.project-version.outputs.project_version }}
           path: target/${{ env.ARTIFACT_NAME }}-${{ steps.project-version.outputs.project_version }}.jar
 
       # Deploy release into nexus repository

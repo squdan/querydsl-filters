@@ -69,7 +69,7 @@ jobs:
           mvn test
 
       # If there are test errors, upload de reports
-      - name: Upload test reports
+      - name: Upload test error reports
         uses: actions/upload-artifact@v3
         if: failure()
         with:
@@ -82,7 +82,7 @@ jobs:
         run: mvn install -DskipTests
 
       # Send coverage report to coveralls
-      - name: Send coverage report
+      - name: Send coverage report to coveralls
         run:  mvn coveralls:report
 
       # Upload coverage report

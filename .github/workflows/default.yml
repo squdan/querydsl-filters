@@ -58,8 +58,10 @@ jobs:
         run: |
           project_version=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "project_version=$project_version" >> $GITHUB_OUTPUT
-          echo $project_version
+          echo Version detected: $project_version
           echo $COVERALLS_TOKEN
+          echo ${{ secrets.COVERALLS_TOKEN }}
+          echo ${{ env.COVERALLS_TOKEN }}
 
       # Run tests to validate the code
       - name: Run tests

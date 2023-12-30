@@ -59,9 +59,10 @@ jobs:
           project_version=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "project_version=$project_version" >> $GITHUB_OUTPUT
           echo Version detected: $project_version
-          echo "${secrets.COVERALLS_TOKEN}".Substring(0,6)
-          echo "${{ secrets.COVERALLS_TOKEN }}".Substring(0,6)
-          echo "${{ env.COVERALLS_TOKEN }}".Substring(0,6)
+          echo Single braces secret: ${secrets.COVERALLS_TOKEN}
+          echo Single braces env: ${env.COVERALLS_TOKEN}
+          echo Double braces secret: ${{ secrets.COVERALLS_TOKEN }}
+          echo Double braces env: ${{ env.COVERALLS_TOKEN }}
 
       # Run tests to validate the code
       - name: Run tests

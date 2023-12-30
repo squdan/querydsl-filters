@@ -78,7 +78,9 @@ jobs:
 
       # Send coverage report to coveralls
       - name: Send coverage report
-        run:  mvn coveralls:report
+        run:  |
+          set COVERALLS_TOKEN=${{ secrets.COVERALLS_TOKEN }}
+          mvn coveralls:report
 
       # Upload coverage report
       - name: Upload coverage report

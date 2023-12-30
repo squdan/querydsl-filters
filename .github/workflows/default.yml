@@ -76,6 +76,10 @@ jobs:
       - name: Run install
         run: mvn install -DskipTests
 
+      # Send coverage report to coveralls
+      - name: Send coverage report
+        run:  mvn coveralls:report
+
       # Upload coverage report
       - name: Upload coverage report
         uses: actions/upload-artifact@v3

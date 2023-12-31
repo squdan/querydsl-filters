@@ -81,7 +81,7 @@ jobs:
           GPG_SECRET: ${{ secrets.GPG_SECRET }}
           MAVEN_REPO_USER: ${{ secrets.MAVEN_REPO_USER }}
           MAVEN_REPO_PASS: ${{ secrets.MAVEN_REPO_PASS }}
-        run: mvn install -DskipTests
+        run: mvn install -DskipTests -s .m2/settings.xml
 
       # Send coverage report to coveralls
       - name: Send coverage report to coveralls

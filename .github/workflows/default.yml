@@ -77,6 +77,10 @@ jobs:
       # Install
       # - Generate coverage report
       - name: Run install
+        env:
+          GPG_SECRET: ${{ secrets.GPG_SECRET }}
+          MAVEN_REPO_USER: ${{ secrets.MAVEN_REPO_USER }}
+          MAVEN_REPO_PASS: ${{ secrets.MAVEN_REPO_PASS }}
         run: mvn install -DskipTests
 
       # Send coverage report to coveralls

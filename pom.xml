@@ -20,7 +20,6 @@
     <name>Querydsl-filters</name>
     <description>Use custom filters to search into your Spring-Data repository.</description>
     <url>https://github.com/squdan/querydsl-filters</url>
-    <timezone>Europe/Madrid</timezone>
 
     <licenses>
         <license>
@@ -37,12 +36,12 @@
 
     <distributionManagement>
         <repository>
-            <id>nss-releases</id>
-            <url>${nexus.releases.url}</url>
+            <id>sonatype-releases</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2</url>
         </repository>
         <snapshotRepository>
-            <id>nss-snapshots</id>
-            <url>${nexus.snapshots.url}</url>
+            <id>sonatype-snapshots</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -68,8 +67,6 @@
         <jacoco.version>0.8.11</jacoco.version>
 
         <!-- Configurable by environment -->
-        <nexus.releases.url>${env.MAVEN_REPO_RELEASES_URL}</nexus.releases.url>
-        <nexus.snapshots.url>${env.MAVEN_REPO_SNAPSHOTS_URL}</nexus.snapshots.url>
         <coveralls.token>${env.COVERALLS_TOKEN}</coveralls.token>
     </properties>
 
@@ -201,6 +198,27 @@
                 </executions>
             </plugin>
 
+            <!-- Plugin to add generated-test-sources (QueryDsl Entities from tests) -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>target/generated-test-sources/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- This plugin executes should QueryDslEntityTestGenerator to generate QEntity from tests package -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -209,7 +227,7 @@
                 <executions>
                     <execution>
                         <id>build-test-environment</id>
-                        <phase>test</phase>
+                        <phase>test-compile</phase>
                         <goals>
                             <goal>java</goal> <!-- exec / java -->
                         </goals>
@@ -217,9 +235,9 @@
                 </executions>
                 <configuration>
                     <classpathScope>test</classpathScope>
-                    <mainClass>configuration.io.github.squdan.querydsl.filters.QueryDslEntityManualGenerator</mainClass>
+                    <mainClass>io.github.squdan.querydsl.filters.configuration.QueryDslEntityManualGenerator</mainClass>
                     <arguments>
-                        <argument>entity.repository.io.github.squdan.querydsl.filters.UserEntity</argument>
+                        <argument>io.github.squdan.querydsl.filters.repository.entity.UserEntity</argument>
                     </arguments>
                 </configuration>
             </plugin>
@@ -245,27 +263,6 @@
                     </execution>
                 </executions>
             </plugin> -->
-
-            <!-- Plugin to add generated-test-sources (QueryDsl Entities from tests) -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.5.0</version>
-                <executions>
-                    <execution>
-                        <id>add-test-source</id>
-                        <phase>generate-test-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>target/generated-test-sources/java</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
 
             <!-- Plugin for maven compilation supporting lombok -->
             <plugin>

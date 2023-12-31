@@ -43,9 +43,9 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
-      # Clean package - Required to have available test-generated-sources at test step
-      - name: Clean package
-        run: mvn clean package -DskipTests
+      # Clean compile
+      - name: Clean compile
+        run: mvn clean compile
 
       # Get project version
       - name: Get project version
@@ -54,6 +54,12 @@ jobs:
           project_version=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "project_version=$project_version" >> $GITHUB_OUTPUT
           echo Version detected: $project_version
+
+      # Generate test sources
+      - name: Generate test sources
+        run: |
+          mvn generate-test-sources
+          mvn test-compile
 
       # Run tests to validate the code
       - name: Run tests

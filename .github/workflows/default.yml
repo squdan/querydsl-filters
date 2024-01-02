@@ -76,11 +76,14 @@ jobs:
 
       # Install
       # - Generate coverage report
+      # - Import GPG key from Github account
       # - Sign with GPG secret
       - name: Run install
         env:
           GPG_SECRET: ${{ secrets.GPG_SECRET }}
-        run: mvn install -DskipTests -s .m2/settings.xml
+        run: |
+          gpg --import <(echo "${{ secrets.GPG_KEY }}")
+          mvn install -DskipTests -s .m2/settings.xml
 
       # Send coverage report to coveralls
       - name: Send coverage report to coveralls

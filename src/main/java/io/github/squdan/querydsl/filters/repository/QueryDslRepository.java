@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
- * Spring-Data repository with default implementation of findAll(List<QueryDslFilter> filters, final Pageable pageable)
+ * Spring-Data repository with default implementation of findAll(List of QueryDslFilter filters, final Pageable pageable)
  * and required configuration to use filters at your App repositories.
  * <p>
  * EntityType is required to be configured at "getEntityType()" method to work.
@@ -32,8 +32,20 @@ import java.util.stream.StreamSupport;
 public interface QueryDslRepository<T, K extends EntityPathBase<T>>
         extends QuerydslPredicateExecutor<T>, QuerydslBinderCustomizer<K> {
 
+    /**
+     * Entity class.
+     *
+     * @return Class from entity.
+     */
     Class<T> getEntityType();
 
+    /**
+     * Searchs into the repository usin received filters.
+     *
+     * @param filters  to apply.
+     * @param pageable to apply (optional).
+     * @return List entity found elements.
+     */
     default List<T> findAll(final List<QueryDslFilter> filters, final Pageable pageable) {
         List<T> result = null;
 
@@ -59,6 +71,11 @@ public interface QueryDslRepository<T, K extends EntityPathBase<T>>
         return result;
     }
 
+    /**
+     * Override this method and return your own implementation of QueryDslTypeManager to support new types.
+     *
+     * @return QueryDslTypeManager implementation.
+     */
     default QueryDslTypeManager getCustomTypesManager() {
         return null;
     }

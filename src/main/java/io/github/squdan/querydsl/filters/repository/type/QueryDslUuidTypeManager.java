@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
 
+/**
+ * QueryDslTypeManager implementation to manage UUIDs.
+ */
 @Slf4j
 public final class QueryDslUuidTypeManager implements QueryDslTypeManager {
 

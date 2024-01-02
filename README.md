@@ -70,7 +70,7 @@ QueryDslRepository and define a method returning the entity class. Example:
 ```java
 package io.github.squdan.querydsl.filters.examples;
 
-import entity.repository.io.github.squdan.querydsl.filters.UserEntity;
+import io.github.squdan.querydsl.filters.repository.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -115,48 +115,64 @@ import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.SimplePath;
 import io.github.squdan.querydsl.filters.QueryDslFilter;
 import io.github.squdan.querydsl.filters.QueryDslFiltersException;
-import type.repository.io.github.squdan.querydsl.filters.QueryDslTypeManager;
+import io.github.squdan.querydsl.filters.repository.type.QueryDslTypeManager;
 
 public final class QueryDslExampleEnumTypeManager implements QueryDslTypeManager {
 
-  // Conditions to execute this QueryDslTypeManager
-  public <T> boolean isSupported(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
-    return ExampleEnum.class.isAssignableFrom(getTypeFrom(entityType, filter.getKey()));
-  }
-
-  // Manage filter for custom type field
-  public <T> BooleanExpression manage(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
-    BooleanExpression result;
-
-    // Create field path
-    final SimplePath<ExampleEnum> path = entityPath.getSimple(filter.getKey(), ExampleEnum.class);
-
-    // Parse value
-    final ExampleEnum value = ExampleEnum.valueOf(String.valueOf(filter.getValue()));
-
-    // Process operator
-    switch (filter.getOperator()) {
-      case IS_NULL_FUNCTION:
-        result = path.isNull();
-        break;
-      case NON_NULL_FUNCTION:
-        result = path.isNotNull();
-        break;
-      case EQUALS:
-      case EQUALS_FUNCTION:
-      case EQUALS_FUNCTION_EQ:
-        result = path.eq(value);
-        break;
-      case NOT_EQUALS:
-      case NON_EQUALS_FUNCTION:
-      case NON_EQUALS_FUNCTION_NE:
-        result = path.ne(value);
-        break;
-      default:
-        throw new QueryDslFiltersException(String.format("Operation '%s' not supported for type 'ExampleEnum'.", filter.getOperator()));
+    // Conditions to execute this QueryDslTypeManager
+    public <T> boolean isSupported(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
+        return ExampleEnum.class.isAssignableFrom(getTypeFrom(entityType, filter.getKey()));
     }
 
-    return result;
+    // Manage filter for custom type field
+    public <T> BooleanExpression manage(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
+        BooleanExpression result;
+
+        // Create field path
+        final SimplePath<ExampleEnum> path = entityPath.getSimple(filter.getKey(), ExampleEnum.class);
+
+        // Parse value
+        final ExampleEnum value = ExampleEnum.valueOf(String.valueOf(filter.getValue()));
+
+        // Process operator
+        switch (filter.getOperator()) {
+            case IS_NULL_FUNCTION:
+                result = path.isNull();
+                break;
+            case NON_NULL_FUNCTION:
+                result = path.isNotNull();
+                break;
+            case EQUALS:
+            case EQUALS_FUNCTION:
+            case EQUALS_FUNCTION_EQ:
+                result = path.eq(value);
+                break;
+            case NOT_EQUALS:
+            case NON_EQUALS_FUNCTION:
+            case NON_EQUALS_FUNCTION_NE:
+                result = path.ne(value);
+                break;
+            default:
+                throw new QueryDslFiltersException(String.format("Operation '%s' not supported for type 'ExampleEnum'.", filter.getOperator()));
+        }
+
+        return result;
+    }
+}
+```
+
+Also you may want to configure your custom date format to be managed at **QueryDslDateTypeManager**. To achieve this,
+you just need to call to **DateTimeUtils.addDateTimeFormat** to register your date format.
+
+```java
+package io.github.squdan.querydsl.filters.examples;
+
+import io.github.squdan.querydsl.filters.util.DateTimeUtils;
+
+public class ConfigurationClass {
+
+  public void configure() {
+    DateTimeUtils.addDateTimeFormat(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
   }
 }
 ```
@@ -167,7 +183,7 @@ types.
 ```java
 package io.github.squdan.querydsl.filters.examples;
 
-import entity.repository.io.github.squdan.querydsl.filters.UserEntity;
+import io.github.squdan.querydsl.filters.repository.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -12,6 +12,9 @@ import java.time.Instant;
 import java.time.temporal.Temporal;
 import java.util.Date;
 
+/**
+ * QueryDslTypeManager implementation to manage Dates.
+ */
 @Slf4j
 public final class QueryDslDateTypeManager implements QueryDslTypeManager {
 

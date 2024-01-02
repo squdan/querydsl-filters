@@ -6,6 +6,9 @@ import com.querydsl.core.types.dsl.StringPath;
 import io.github.squdan.querydsl.filters.QueryDslFilter;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * QueryDslTypeManager implementation to manage Strings (default if no other manager found for type to process).
+ */
 @Slf4j
 public final class QueryDslStringTypeManager implements QueryDslTypeManager {
 

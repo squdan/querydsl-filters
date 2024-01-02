@@ -10,6 +10,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+/**
+ * Class to map from String to QueryDslFilters.
+ * <p>
+ * String filters must follow QueryDslFilters formats:
+ * <p>
+ * - Operations:
+ * --> Example: user.name = test
+ * <p>
+ * Functions:
+ * --> Example: nonNull(currency)
+ * --> Example: contains(username, test)
+ */
 public final class QueryDslFiltersMapper {
 
     // Configuration - Allowed characters
@@ -101,8 +113,8 @@ public final class QueryDslFiltersMapper {
      * <p>
      * If format not correct, null will be returned.
      *
-     * @param filters: List<QueryDslFilter> in String format.
-     * @return List<QueryDslFilter>.
+     * @param filters: List QueryDslFilter in String format.
+     * @return List of QueryDslFilter mapped filters.
      */
     public static List<QueryDslFilter> map(final List<String> filters) {
         List<QueryDslFilter> result = null;

@@ -7,6 +7,9 @@ import io.github.squdan.querydsl.filters.QueryDslFilter;
 import io.github.squdan.querydsl.filters.QueryDslFiltersException;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * QueryDslTypeManager implementation to manage Numbers.
+ */
 @Slf4j
 public final class QueryDslNumberTypeManager implements QueryDslTypeManager {
 

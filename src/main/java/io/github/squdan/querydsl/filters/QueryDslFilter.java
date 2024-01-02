@@ -20,9 +20,9 @@ import java.util.Optional;
 public class QueryDslFilter {
 
     // Formats supported
-    public static final String NORMAL_OPERATOR = "%s%s%s";
-    public static final String FUNCTION_OPERATOR = "%s(%s : %s)";
-    public static final String FUNCTION_OPERATOR_SINGLE_ARGUMENT = "%s(%s)";
+    private static final String NORMAL_OPERATOR = "%s%s%s";
+    private static final String FUNCTION_OPERATOR = "%s(%s : %s)";
+    private static final String FUNCTION_OPERATOR_SINGLE_ARGUMENT = "%s(%s)";
 
     /**
      * Entity field name

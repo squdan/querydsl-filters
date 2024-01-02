@@ -76,11 +76,10 @@ jobs:
 
       # Install
       # - Generate coverage report
+      # - Sign with GPG secret
       - name: Run install
         env:
           GPG_SECRET: ${{ secrets.GPG_SECRET }}
-          MAVEN_REPO_USER: ${{ secrets.MAVEN_REPO_USER }}
-          MAVEN_REPO_PASS: ${{ secrets.MAVEN_REPO_PASS }}
         run: mvn install -DskipTests -s .m2/settings.xml
 
       # Send coverage report to coveralls
@@ -105,10 +104,11 @@ jobs:
           name: querydsl-filter-${{ steps.project-version.outputs.project_version }}
           path: target/${{ env.ARTIFACT_NAME }}-${{ steps.project-version.outputs.project_version }}.jar
 
-      # Deploy release into nexus repository
-      #- name: Deploy release 🚀
-      #  if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-      #  env:
-      #    NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-      #    NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-      #  run: mvn --batch-mode clean deploy --settings deploy/.m2/settings.xml -DskipTests
+      # Deploy
+      # - Uploads RELEASE or SNAPSHOT to Nexus
+      - name: Run deploy
+        if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') }}
+        env:
+          MAVEN_REPO_USER: ${{ secrets.MAVEN_REPO_USER }}
+          MAVEN_REPO_PASS: ${{ secrets.MAVEN_REPO_PASS }}
+        run: mvn deploy -DskipTests -s .m2/settings.xml

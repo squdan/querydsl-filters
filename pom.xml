@@ -36,11 +36,11 @@
 
     <distributionManagement>
         <repository>
-            <id>sonatype-releases</id>
+            <id>ossrh</id>
             <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2</url>
         </repository>
         <snapshotRepository>
-            <id>sonatype-snapshots</id>
+            <id>ossrh</id>
             <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
@@ -316,6 +316,34 @@
                 </configuration>
             </plugin>
 
+            <!-- To add sources to the jar (necessary to upload to maven-central) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- To add javadoc to the jar (necessary to upload to maven-central) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Sign code to upload to nexus -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -328,8 +356,25 @@
                         <goals>
                             <goal>sign</goal>
                         </goals>
+                        <configuration>
+                            <keyname>EE39734E23B095950946A240D0B0FF0F73B68E83</keyname>
+                            <passphraseServerId>EE39734E23B095950946A240D0B0FF0F73B68E83</passphraseServerId>
+                        </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- To upload to nexus -->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
             </plugin>
         </plugins>
     </build>

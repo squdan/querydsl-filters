@@ -57,7 +57,7 @@ public final class DateTimeUtils {
      *
      * @param newDateTimeFormat: new format to support.
      */
-    public void addDateTimeFormat(final DateTimeFormatter newDateTimeFormat) {
+    public static void addDateTimeFormat(final DateTimeFormatter newDateTimeFormat) {
         FORMATTERS.add(newDateTimeFormat);
     }
 

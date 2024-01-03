@@ -4,7 +4,7 @@ QueryDsl-Filters is an open-source library that extends QueryDsl framework funct
 programmers can use to execute database queries easily.
 
 [![Build Status](https://github.com/squdan/querydsl-filters/workflows/querydsl-filters/badge.svg)](https://github.com/squdan/querydsl-filters/actions)
-[![Coverage Status](https://coveralls.io/repos/github/squdan/querydsl-filters/badge.svg?branch=main)](https://coveralls.io/github/squdan/querydsl-filters?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/squdan/querydsl-filters/badge.svg?branch=master)](https://coveralls.io/github/squdan/querydsl-filters?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.squdan/querydsl-filters/badge.svg?style=flat-square&color=007ec6)](https://maven-badges.herokuapp.com/maven-central/io.github.squdan/querydsl-filters/)
 
 ## Requirements
@@ -21,7 +21,7 @@ programmers can use to execute database queries easily.
 The first step is to include QueryDsl-Filters into your project. You can download Maven dependency from
 **Maven Central**.
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.squdan/querydsl-filters/badge.svg?style=flat-square&color=007ec6)](Pending maven url)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.squdan/querydsl-filters/badge.svg?style=flat-square&color=007ec6)](https://maven-badges.herokuapp.com/maven-central/io.github.squdan/querydsl-filters/)
 
 ```maven
 <dependency>

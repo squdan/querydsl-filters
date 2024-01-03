@@ -43,6 +43,12 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
+      # Download GPG key
+      - name: Download GPG key
+        run: |
+          gpg --recv-keys ${{ secrets.GPG_ID }}
+          gpg --list-keys
+
       # Clean compile
       - name: Clean compile
         run: mvn clean compile
@@ -73,14 +79,6 @@ jobs:
         with:
           name: test-reports
           path: './**/target/surefire-reports/'
-
-      # Download GPG key
-      - name: Download GPG key
-        env:
-          GPG_KEY: ${{ secrets.GPG_KEY }}
-        run: |
-            gpg --recv-keys ${{ env.GPG_KEY }}
-            gpg --list-keys
 
       # Install
       # - Generate coverage report

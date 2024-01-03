@@ -77,9 +77,9 @@ jobs:
       # Download GPG key
       - name: Download GPG key
         env:
-          GPG_ID: ${{ secrets.GPG_ID }}
+          GPG_KEY: ${{ secrets.GPG_KEY }}
         run: |
-            gpg --recv-keys ${{ env.GPG_ID }}
+            gpg --recv-keys ${{ env.GPG_KEY }}
             gpg --list-keys
 
       # Install

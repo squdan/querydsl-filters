@@ -89,6 +89,7 @@ jobs:
           GPG_KEY: ${{ secrets.GPG_KEY }}
           GPG_SECRET: ${{ secrets.GPG_SECRET }}
         run: |
+          gpg --list-keys
           mvn install -DskipTests -s .m2/settings.xml
 
       # Send coverage report to coveralls

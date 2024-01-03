@@ -46,7 +46,8 @@ jobs:
       # Download GPG key
       - name: Download GPG key
         run: |
-          gpg --recv-keys ${{ secrets.GPG_ID }}
+          echo "${{ secrets.GPG }}" > gpg_key.gpg
+          gpg --import gpg_key.gpg
           gpg --list-keys
 
       # Clean compile

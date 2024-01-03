@@ -79,9 +79,6 @@ jobs:
         run: |
           echo "${{ secrets.GPG }}" > gpg_key.gpg
           gpg --import gpg_key.gpg
-          gpg --list-keys
-          gpg --list-keys ${{ secrets.GPG_KEY }}
-          gpg --list-keys ${{ secrets.GPG_KEY_SHORT }}
 
       # Install
       # - Generate coverage report
@@ -91,9 +88,6 @@ jobs:
           GPG_KEY: ${{ secrets.GPG_KEY }}
           GPG_SECRET: ${{ secrets.GPG_SECRET }}
         run: |
-          gpg --list-keys
-          gpg --list-keys ${{ secrets.GPG_KEY }}
-          gpg --list-keys ${{ secrets.GPG_KEY_SHORT }}
           mvn install -DskipTests -s .m2/settings.xml
 
       # Send coverage report to coveralls

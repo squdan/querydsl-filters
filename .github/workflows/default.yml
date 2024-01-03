@@ -79,7 +79,6 @@ jobs:
         run: |
           echo "${{ secrets.GPG }}" > gpg_key.gpg
           gpg --import gpg_key.gpg
-          gpg --default-key ${{ secrets.GPG_KEY }}
 
       # Install
       # - Generate coverage report

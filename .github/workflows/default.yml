@@ -43,9 +43,9 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
-      # Clean package - Required to have available test-generated-sources at test step
-      - name: Clean package
-        run: mvn clean package -DskipTests
+      # Clean compile
+      - name: Clean compile
+        run: mvn clean compile
 
       # Get project version
       - name: Get project version
@@ -54,6 +54,12 @@ jobs:
           project_version=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "project_version=$project_version" >> $GITHUB_OUTPUT
           echo Version detected: $project_version
+
+      # Generate test sources
+      - name: Generate test sources
+        run: |
+          mvn generate-test-sources
+          mvn test-compile
 
       # Run tests to validate the code
       - name: Run tests
@@ -68,10 +74,21 @@ jobs:
           name: test-reports
           path: './**/target/surefire-reports/'
 
+      # Download GPG key
+      - name: Download GPG key
+        run: |
+          echo "${{ secrets.GPG }}" > gpg_key.asc
+          gpg --batch --passphrase ${{ secrets.GPG_SECRET }} --import gpg_key.asc
+
       # Install
       # - Generate coverage report
+      # - Sign with GPG secret
       - name: Run install
-        run: mvn install -DskipTests
+        env:
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+          GPG_SECRET: ${{ secrets.GPG_SECRET }}
+        run: |
+          mvn install -DskipTests -s .m2/settings.xml
 
       # Send coverage report to coveralls
       - name: Send coverage report to coveralls
@@ -95,10 +112,11 @@ jobs:
           name: querydsl-filter-${{ steps.project-version.outputs.project_version }}
           path: target/${{ env.ARTIFACT_NAME }}-${{ steps.project-version.outputs.project_version }}.jar
 
-      # Deploy release into nexus repository
-      #- name: Deploy release 🚀
-      #  if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-      #  env:
-      #    NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-      #    NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-      #  run: mvn --batch-mode clean deploy --settings deploy/.m2/settings.xml -DskipTests
+      # Deploy
+      # - Uploads RELEASE or SNAPSHOT to Nexus
+      - name: Run deploy
+        if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') }}
+        env:
+          MAVEN_REPO_USER: ${{ secrets.MAVEN_REPO_USER }}
+          MAVEN_REPO_PASS: ${{ secrets.MAVEN_REPO_PASS }}
+        run: mvn deploy -DskipTests -s .m2/settings.xml

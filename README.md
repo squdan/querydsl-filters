@@ -5,7 +5,7 @@ programmers can use to execute database queries easily.
 
 [![Build Status](https://github.com/squdan/querydsl-filters/workflows/querydsl-filters/badge.svg)](https://github.com/squdan/querydsl-filters/actions)
 [![Coverage Status](https://coveralls.io/repos/github/squdan/querydsl-filters/badge.svg?branch=main)](https://coveralls.io/github/squdan/querydsl-filters?branch=main)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/es.squdan/querydsl-filters/badge.svg?style=flat-square&color=007ec6)](https://maven-badges.herokuapp.com/maven-central/es.squdan/querydsl-filters/)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.squdan/querydsl-filters/badge.svg?style=flat-square&color=007ec6)](https://maven-badges.herokuapp.com/maven-central/io.github.squdan/querydsl-filters/)
 
 ## Requirements
 
@@ -21,11 +21,11 @@ programmers can use to execute database queries easily.
 The first step is to include QueryDsl-Filters into your project. You can download Maven dependency from
 **Maven Central**.
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/es.squdan/querydsl-filters/badge.svg?style=flat-square&color=007ec6)](Pending maven url)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.squdan/querydsl-filters/badge.svg?style=flat-square&color=007ec6)](Pending maven url)
 
 ```maven
 <dependency>
-    <groupId>es.squdan</groupId>
+    <groupId>io.github.squdan</groupId>
     <artifactId>querydsl-filters</artifactId>
     <version>0.0.1</version>
 </dependency>
@@ -68,9 +68,9 @@ To enable **QueryDslFilter** method in your **Spring-Data** repositories you hav
 QueryDslRepository and define a method returning the entity class. Example:
 
 ```java
-package es.squdan.querydsl.filters.examples;
+package io.github.squdan.querydsl.filters.examples;
 
-import es.squdan.querydsl.filters.repository.entity.UserEntity;
+import io.github.squdan.querydsl.filters.repository.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -88,7 +88,7 @@ QueryDslFilters and return founds results.
 
 ```
 import org.springframework.data.domain.Pageable;
-import es.squdan.querydsl.filters.QueryDslFilter;
+import io.github.squdan.querydsl.filters.QueryDslFilter;
 
 List<T> findAll(final List<QueryDslFilter> filters, final Pageable pageable);
 ```
@@ -108,14 +108,14 @@ You may find some undesirable behaviour at this default type management or you m
 own behaviour.
 
 ```java
-package es.squdan.querydsl.filters.examples;
+package io.github.squdan.querydsl.filters.examples;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.SimplePath;
-import es.squdan.querydsl.filters.QueryDslFilter;
-import es.squdan.querydsl.filters.QueryDslFiltersException;
-import es.squdan.querydsl.filters.repository.type.QueryDslTypeManager;
+import io.github.squdan.querydsl.filters.QueryDslFilter;
+import io.github.squdan.querydsl.filters.QueryDslFiltersException;
+import io.github.squdan.querydsl.filters.repository.type.QueryDslTypeManager;
 
 public final class QueryDslExampleEnumTypeManager implements QueryDslTypeManager {
 
@@ -161,13 +161,29 @@ public final class QueryDslExampleEnumTypeManager implements QueryDslTypeManager
 }
 ```
 
+Also you may want to configure your custom date format to be managed at **QueryDslDateTypeManager**. To achieve this,
+you just need to call to **DateTimeUtils.addDateTimeFormat** to register your date format.
+
+```java
+package io.github.squdan.querydsl.filters.examples;
+
+import io.github.squdan.querydsl.filters.util.DateTimeUtils;
+
+public class ConfigurationClass {
+
+  public void configure() {
+    DateTimeUtils.addDateTimeFormat(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+  }
+}
+```
+
 Once implemented your QueryDslTypeManager you must configure it into the repositories where you want to manage this
 types.
 
 ```java
-package es.squdan.querydsl.filters.examples;
+package io.github.squdan.querydsl.filters.examples;
 
-import es.squdan.querydsl.filters.repository.entity.UserEntity;
+import io.github.squdan.querydsl.filters.repository.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -192,7 +208,7 @@ public interface ExampleRepository extends JpaRepository<ExampleEntity, ID_TYPE>
 Now, you can use your custom filters in your application. These filters can be directly used in your java code or they
 can be received from out and mapping.
 
-There are 2 kind of filters available to use (check at **es.squdan.querydsl.filters.QueryDslOperators**):
+There are 2 kind of filters available to use (check at **io.github.squdan.querydsl.filters.QueryDslOperators**):
 
 * Simple-Operators: format **key{{operator}}value**. Example: key=value
 * Functions:
@@ -204,16 +220,14 @@ There are 2 kind of filters available to use (check at **es.squdan.querydsl.filt
 Developing QueryDsl-Filters in java is quite easy. Example:
 
 ```java
-package es.squdan.querydsl.filters.examples;
+package io.github.squdan.querydsl.filters.examples;
 
-import es.squdan.querydsl.filters.QueryDslFilter;
-import es.squdan.querydsl.filters.QueryDslOperators;
+import io.github.squdan.querydsl.filters.QueryDslFilter;
+import io.github.squdan.querydsl.filters.QueryDslOperators;
 import lombok.RequiredArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 public class TestingFilters {
@@ -297,17 +311,13 @@ You may want to receive or configure dynamic filters as String, you can use **Qu
 to **QueryDslFilter**.
 
 ```java
-package es.squdan.querydsl.filters.examples;
+package io.github.squdan.querydsl.filters.examples;
 
-import es.squdan.querydsl.filters.QueryDslFilter;
-import es.squdan.querydsl.filters.QueryDslFiltersMapper;
-import es.squdan.querydsl.filters.QueryDslOperators;
+import io.github.squdan.querydsl.filters.QueryDslFilter;
+import io.github.squdan.querydsl.filters.QueryDslFiltersMapper;
 import lombok.RequiredArgsConstructor;
 
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 public class TestingFilters {

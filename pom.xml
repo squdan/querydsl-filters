@@ -12,13 +12,46 @@
     </parent>
 
     <!-- Maven coordinates -->
-    <groupId>es.squdan</groupId>
+    <groupId>io.github.squdan</groupId>
     <artifactId>querydsl-filters</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <!-- Project-level information -->
     <name>Querydsl-filters</name>
     <description>Use custom filters to search into your Spring-Data repository.</description>
+    <url>https://github.com/squdan/querydsl-filters</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://git@github.com/squdan/querydsl-filters.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:squdan/querydsl-filters.git</developerConnection>
+        <url>https://github.com/squdan/querydsl-filters/tree/main</url>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <developers>
+        <developer>
+            <name>Daniel Torres Rojano</name>
+            <email>i02torod@gmail.com</email>
+            <url>https://www.linkedin.com/in/daniel-torres-rojano-ab541a62/</url>
+        </developer>
+    </developers>
 
     <!-- Project properties -->
     <properties>
@@ -30,8 +63,6 @@
         <querydsl.version>5.0.0</querydsl.version>
         <querydsl.plugin.version>1.1.3</querydsl.plugin.version>
         <lombok.version>1.18.30</lombok.version>
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
-        <mapstruct.bindings.version>0.2.0</mapstruct.bindings.version>
         <apache.commons.collections4.version>4.4</apache.commons.collections4.version>
         <jacoco.version>0.8.11</jacoco.version>
 
@@ -167,51 +198,6 @@
                 </executions>
             </plugin>
 
-            <!-- This plugin executes should QueryDslEntityTestGenerator to generate QEntity from tests package -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.1</version>
-                <executions>
-                    <execution>
-                        <id>build-test-environment</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>java</goal> <!-- exec / java -->
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <classpathScope>test</classpathScope>
-                    <mainClass>es.squdan.querydsl.filters.configuration.QueryDslEntityManualGenerator</mainClass>
-                    <arguments>
-                        <argument>es.squdan.querydsl.filters.repository.entity.UserEntity</argument>
-                    </arguments>
-                </configuration>
-            </plugin>
-
-            <!-- This plugin should generate QEntity from tests package, but still not supporting Jakarta -->
-            <!--<plugin>
-                <groupId>com.querydsl</groupId>
-                <artifactId>querydsl-maven-plugin</artifactId>
-                <version>${querydsl.version}</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>jpa-export</goal>
-                        </goals>
-                        <configuration>
-                            <testClasspath>true</testClasspath>
-                            <targetFolder>target/generated-sources/java</targetFolder>
-                            <packages>
-                                <package>es.squdan.querydsl.filters.repository</package>
-                            </packages>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin> -->
-
             <!-- Plugin to add generated-test-sources (QueryDsl Entities from tests) -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -233,7 +219,52 @@
                 </executions>
             </plugin>
 
-            <!-- Plugin for maven compilation supporting lombok and mapstruct -->
+            <!-- This plugin executes should QueryDslEntityTestGenerator to generate QEntity from tests package -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>build-test-environment</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>java</goal> <!-- exec / java -->
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <classpathScope>test</classpathScope>
+                    <mainClass>io.github.squdan.querydsl.filters.configuration.QueryDslEntityManualGenerator</mainClass>
+                    <arguments>
+                        <argument>io.github.squdan.querydsl.filters.repository.entity.UserEntity</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+
+            <!-- This plugin should generate QEntity from tests package, but still not supporting Jakarta -->
+            <!--<plugin>
+                <groupId>com.querydsl</groupId>
+                <artifactId>querydsl-maven-plugin</artifactId>
+                <version>${querydsl.version}</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>jpa-export</goal>
+                        </goals>
+                        <configuration>
+                            <testClasspath>true</testClasspath>
+                            <targetFolder>target/generated-sources/java</targetFolder>
+                            <packages>
+                                <package>io.github.squdan.querydsl.filters.repository</package>
+                            </packages>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin> -->
+
+            <!-- Plugin for maven compilation supporting lombok -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -282,6 +313,65 @@
                 <version>4.5.0-M2</version>
                 <configuration>
                     <repoToken>${coveralls.token}</repoToken>
+                </configuration>
+            </plugin>
+
+            <!-- To add sources to the jar (necessary to upload to maven-central) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- To add javadoc to the jar (necessary to upload to maven-central) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Sign code to upload to nexus -->
+            <!-- https://central.sonatype.org/publish/publish-maven/#gpg-signed-components -->
+            <!-- https://docs.github.com/en/authentication/managing-commit-signature-verification/adding-a-gpg-key-to-your-github-account -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- To upload to nexus -->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
         </plugins>

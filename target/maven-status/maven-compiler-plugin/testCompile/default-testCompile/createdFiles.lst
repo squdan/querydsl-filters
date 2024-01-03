@@ -1,0 +1,10 @@
+es\squdan\querydsl\filters\configuration\QueryDslEntityTestGenerator.class
+es\squdan\querydsl\filters\repository\UserRepositoryIT.class
+es\squdan\querydsl\filters\repository\UserRepository.class
+es\squdan\querydsl\filters\QueryDslFiltersMapperIT.class
+es\squdan\querydsl\filters\configuration\TestQueryDslFiltersApplication.class
+es\squdan\querydsl\filters\repository\Roles.class
+es\squdan\querydsl\filters\configuration\DatabaseTestConfiguration.class
+es\squdan\querydsl\filters\repository\UserEntity$UserEntityBuilder.class
+es\squdan\querydsl\filters\repository\UserEntity.class
+es\squdan\querydsl\filters\repository\QUserEntity.class

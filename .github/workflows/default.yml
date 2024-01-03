@@ -1,0 +1,122 @@
+name: querydsl-filters
+
+# Configuration: when to run the jobs
+on:
+  push:
+    branches:
+      - '*'
+    paths-ignore:
+      - README.md
+  pull_request:
+    branches:
+      - '*'
+    paths-ignore:
+      - README.md
+
+# Jobs to execute
+jobs:
+  # Build: mvn build
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Job steps
+    env:
+      ARTIFACT_NAME: querydsl-filters
+
+    # Job steps
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Configure Java JDK to build
+      - name: Set up JDK version
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # Configure cache for maven dependencies
+      - name: Initialize cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+
+      # Clean compile
+      - name: Clean compile
+        run: mvn clean compile
+
+      # Get project version
+      - name: Get project version
+        id: project-version
+        run: |
+          project_version=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
+          echo "project_version=$project_version" >> $GITHUB_OUTPUT
+          echo Version detected: $project_version
+
+      # Generate test sources
+      - name: Generate test sources
+        run: |
+          mvn generate-test-sources
+          mvn test-compile
+
+      # Run tests to validate the code
+      - name: Run tests
+        run: |
+          mvn test
+
+      # If there are test errors, upload de reports
+      - name: Upload test error reports
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: test-reports
+          path: './**/target/surefire-reports/'
+
+      # Download GPG key
+      - name: Download GPG key
+        run: |
+          echo "${{ secrets.GPG }}" > gpg_key.asc
+          gpg --batch --passphrase ${{ secrets.GPG_SECRET }} --import gpg_key.asc
+
+      # Install
+      # - Generate coverage report
+      # - Sign with GPG secret
+      - name: Run install
+        env:
+          GPG_SECRET: ${{ secrets.GPG_SECRET }}
+        run: |
+          mvn install -DskipTests -s .m2/settings.xml
+
+      # Send coverage report to coveralls
+      - name: Send coverage report to coveralls
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        env:
+          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+        run:  |
+          mvn --batch-mode coveralls:report
+
+      # Upload coverage report
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco-coverage-report
+          path: target/site/jacoco
+
+      # Upload artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: querydsl-filter-${{ steps.project-version.outputs.project_version }}
+          path: target/${{ env.ARTIFACT_NAME }}-${{ steps.project-version.outputs.project_version }}.jar
+
+      # Deploy
+      # - Uploads RELEASE or SNAPSHOT to Nexus
+      - name: Run deploy
+        if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop') }}
+        env:
+          MAVEN_REPO_USER: ${{ secrets.MAVEN_REPO_USER }}
+          MAVEN_REPO_PASS: ${{ secrets.MAVEN_REPO_PASS }}
+          GPG_SECRET: ${{ secrets.GPG_SECRET }}
+        run: mvn deploy -DskipTests -s .m2/settings.xml

@@ -1,0 +1,12 @@
+es\squdan\querydsl\filters\QueryDslFilter.class
+es\squdan\querydsl\filters\QueryDslOperators.class
+es\squdan\querydsl\filters\QueryDslFiltersException.class
+es\squdan\querydsl\filters\util\DateTimeUtils.class
+es\squdan\querydsl\filters\QueryDslFiltersMapper.class
+es\squdan\querydsl\filters\repository\QueryDslRepository.class
+es\squdan\querydsl\filters\QueryDslFilter$QueryDslFilterBuilder.class
+es\squdan\querydsl\filters\repository\QueryDslPredicateBuilder.class
+es\squdan\querydsl\filters\repository\QueryDslPredicateBuilder$1.class
+es\squdan\querydsl\filters\util\DateTimeUtils$SuportedDateTimeFormats.class
+es\squdan\querydsl\filters\repository\QueryDslPredicateBuilder$PredicateGenerator.class
+es\squdan\querydsl\filters\repository\QueryDslCustomTypesManager.class

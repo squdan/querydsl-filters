@@ -1,0 +1,5 @@
+# Created at 2023-12-23T10:21:35.508
+Boot Manifest-JAR contains absolute paths in classpath 'D:\Projects\src\querydsl-filters\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

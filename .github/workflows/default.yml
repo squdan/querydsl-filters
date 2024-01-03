@@ -77,8 +77,8 @@ jobs:
       # Download GPG key
       - name: Download GPG key
         run: |
-          echo "${{ secrets.GPG }}" > gpg_key.gpg
-          gpg --import gpg_key.gpg
+          echo "${{ secrets.GPG }}" > gpg_key.asc
+          gpg --batch --passphrase ${{ secrets.GPG_SECRET }} --import gpg_key.asc
 
       # Install
       # - Generate coverage report

@@ -358,10 +358,6 @@
                         <goals>
                             <goal>sign</goal>
                         </goals>
-                        <configuration>
-                            <keyname>D0B0FF0F73B68E83</keyname>
-                            <passphraseServerId>D0B0FF0F73B68E83</passphraseServerId>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

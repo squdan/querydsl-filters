@@ -74,15 +74,21 @@ jobs:
           name: test-reports
           path: './**/target/surefire-reports/'
 
+      # Download GPG key
+      - name: Download GPG key
+        env:
+          GPG_ID: ${{ secrets.GPG_ID }}
+        run: |
+            gpg --recv-keys <(echo "${{ secrets.GPG_ID }}")
+            gpg --list-keys
+
       # Install
       # - Generate coverage report
-      # - Import GPG key from Github account
       # - Sign with GPG secret
       - name: Run install
         env:
           GPG_SECRET: ${{ secrets.GPG_SECRET }}
         run: |
-          gpg --import <(echo "${{ secrets.GPG_ID }}")
           mvn install -DskipTests -s .m2/settings.xml
 
       # Send coverage report to coveralls

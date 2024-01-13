@@ -24,7 +24,19 @@ public final class QueryDslNumberTypeManager implements QueryDslTypeManager {
         final NumberPath<Double> path = entityPath.getNumber(filter.getKey(), Double.class);
 
         // Parse value
-        final Double value = Double.parseDouble(filter.getValue().toString());
+        Double value;
+
+        try {
+            value = Double.parseDouble(filter.getValue().toString());
+        } catch (final NumberFormatException e) {
+            final String errorMsg = String.format(
+                    "Operation '%s' error, value '%s' couldn't be parsed.",
+                    filter.getOperator(),
+                    filter.getValue()
+            );
+            log.error(errorMsg);
+            throw new QueryDslFiltersException(errorMsg);
+        }
 
         // Process operator
         switch (filter.getOperator()) {

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.Instant;
 import java.time.temporal.Temporal;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * QueryDslTypeManager implementation to manage Dates.
@@ -31,6 +32,16 @@ public final class QueryDslDateTypeManager implements QueryDslTypeManager {
 
         // Parse value
         final Instant value = DateTimeUtils.toInstantUtc(filter.getValue().toString());
+
+        if (Objects.isNull(value)) {
+            final String errorMsg = String.format(
+                    "Operation '%s' error, value '%s' couldn't be parsed.",
+                    filter.getOperator(),
+                    filter.getValue()
+            );
+            log.error(errorMsg);
+            throw new QueryDslFiltersException(errorMsg);
+        }
 
         // Process operator
         switch (filter.getOperator()) {

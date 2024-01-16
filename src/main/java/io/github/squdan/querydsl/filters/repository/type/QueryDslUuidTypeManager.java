@@ -26,7 +26,19 @@ public final class QueryDslUuidTypeManager implements QueryDslTypeManager {
         final SimplePath<UUID> path = entityPath.getSimple(filter.getKey(), UUID.class);
 
         // Parse value
-        final UUID value = UUID.fromString(String.valueOf(filter.getValue()));
+        UUID value;
+
+        try {
+            value = UUID.fromString(String.valueOf(filter.getValue()));
+        } catch (final IllegalArgumentException e) {
+            final String errorMsg = String.format(
+                    "Operation '%s' error, value '%s' couldn't be parsed.",
+                    filter.getOperator(),
+                    filter.getValue()
+            );
+            log.error(errorMsg);
+            throw new QueryDslFiltersException(errorMsg);
+        }
 
         // Process operator
         switch (filter.getOperator()) {

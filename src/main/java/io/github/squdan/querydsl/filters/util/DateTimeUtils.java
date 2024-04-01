@@ -5,10 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -91,7 +88,7 @@ public final class DateTimeUtils {
             final LocalDateTime localDateTime = toLocalDateTime(date);
 
             if (Objects.nonNull(localDateTime)) {
-                result = localDateTime.atZone(TimeZone.getDefault().toZoneId()).toInstant();
+                result = localDateTime.atZone(ZoneOffset.UTC).toInstant();
             }
 
             // Try to parse from String to LocalDate
@@ -99,7 +96,7 @@ public final class DateTimeUtils {
                 final LocalDate localDate = toLocalDate(date);
 
                 if (Objects.nonNull(localDate)) {
-                    result = localDate.atStartOfDay().atZone(TimeZone.getDefault().toZoneId()).toInstant();
+                    result = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
                 }
             }
         }

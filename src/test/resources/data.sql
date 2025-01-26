@@ -9,7 +9,7 @@ VALUES (
     'Admin Name',
     'Admin Lastname',
     35.50,
-    PARSEDATETIME('2020-06-14 00:00:00Z', 'yyyy-MM-dd HH:mm:ssX'),
+    PARSEDATETIME('2020-06-14 00:04:00Z', 'yyyy-MM-dd HH:mm:ssX'),
     PARSEDATETIME('2021-11-27 16:41:32Z', 'yyyy-MM-dd HH:mm:ssX')
 );
 

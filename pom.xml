@@ -14,7 +14,7 @@
     <!-- Maven coordinates -->
     <groupId>io.github.squdan</groupId>
     <artifactId>querydsl-filters</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.4</version>
 
     <!-- Project-level information -->
     <name>Querydsl-filters</name>
@@ -366,7 +366,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>

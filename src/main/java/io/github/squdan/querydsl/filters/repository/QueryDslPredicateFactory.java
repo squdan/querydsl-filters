@@ -27,6 +27,7 @@ public final class QueryDslPredicateFactory {
     private QueryDslCollectionTypeManager QUERY_DSL_COLLECTION_TYPE_MANAGER;
     private static final QueryDslDateTypeManager QUERY_DSL_DATE_TYPE_MANAGER = new QueryDslDateTypeManager();
     private static final QueryDslNumberTypeManager QUERY_DSL_NUMBER_TYPE_MANAGER = new QueryDslNumberTypeManager();
+    private static final QueryDslBooleanTypeManager QUERY_DSL_BOOLEAN_TYPE_MANAGER = new QueryDslBooleanTypeManager();
     private static final QueryDslUuidTypeManager QUERY_DSL_UUID_TYPE_MANAGER = new QueryDslUuidTypeManager();
     private static final QueryDslStringTypeManager QUERY_DSL_STRING_TYPE_MANAGER = new QueryDslStringTypeManager();
 
@@ -90,6 +91,11 @@ public final class QueryDslPredicateFactory {
         // Manage Numbers
         else if (QUERY_DSL_NUMBER_TYPE_MANAGER.isSupported(entityType, entityPath, filter)) {
             result = QUERY_DSL_NUMBER_TYPE_MANAGER.manage(entityType, entityPath, filter);
+        }
+
+        // Manage Booleans
+        else if (QUERY_DSL_BOOLEAN_TYPE_MANAGER.isSupported(entityType, entityPath, filter)) {
+            result = QUERY_DSL_BOOLEAN_TYPE_MANAGER.manage(entityType, entityPath, filter);
         }
 
         // Manage UUIDs

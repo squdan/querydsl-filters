@@ -1,33 +1,34 @@
 package io.github.squdan.querydsl.filters.repository.type;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.NumberPath;
+import com.querydsl.core.types.dsl.BooleanPath;
 import com.querydsl.core.types.dsl.PathBuilder;
 import io.github.squdan.querydsl.filters.QueryDslFilter;
 import io.github.squdan.querydsl.filters.QueryDslFiltersException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * QueryDslTypeManager implementation to manage Numbers.
+ * QueryDslTypeManager implementation to manage Booleans.
  */
 @Slf4j
-public final class QueryDslNumberTypeManager implements QueryDslTypeManager {
+public final class QueryDslBooleanTypeManager implements QueryDslTypeManager {
 
     public <T> boolean isSupported(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
-        return Number.class.isAssignableFrom(getTypeFrom(entityType, filter.getKey()));
+        final Class<?> type = getTypeFrom(entityType, filter.getKey());
+        return Boolean.class.isAssignableFrom(type) || boolean.class.isAssignableFrom(type);
     }
 
     public <T> BooleanExpression manage(final Class<T> entityType, final PathBuilder<T> entityPath, final QueryDslFilter filter) {
         BooleanExpression result = null;
 
         // Create field path
-        final NumberPath<Double> path = entityPath.getNumber(filter.getKey(), Double.class);
+        final BooleanPath path = entityPath.getBoolean(filter.getKey());
 
         // Parse value
-        Double value;
+        boolean value;
 
         try {
-            value = Double.parseDouble(filter.getValue().toString());
+            value = Boolean.parseBoolean(filter.getValue().toString());
         } catch (final NumberFormatException e) {
             final String errorMsg = String.format(
                     "Operation '%s' error, value '%s' couldn't be parsed.",
@@ -56,24 +57,8 @@ public final class QueryDslNumberTypeManager implements QueryDslTypeManager {
             case NON_EQUALS_FUNCTION_NE:
                 result = path.ne(value);
                 break;
-            case GREATER_THAN:
-            case GREATER_THAN_FUNCTION_GT:
-                result = path.gt(value);
-                break;
-            case GREATER_THAN_OR_EQUALS:
-            case GREATER_THAN_OR_EQUALS_FUNCTION_GTE:
-                result = path.goe(value);
-                break;
-            case LOWER_THAN:
-            case LOWER_THAN_FUNCTION_LT:
-                result = path.lt(value);
-                break;
-            case LOWER_THAN_OR_EQUALS:
-            case LOWER_THAN_OR_EQUALS_FUNCTION_LTE:
-                result = path.loe(value);
-                break;
             default:
-                final String errorMsg = String.format("Operation '%s' not supported for type 'Number'.", filter.getOperator());
+                final String errorMsg = String.format("Operation '%s' not supported for type 'Boolean'.", filter.getOperator());
                 log.error(errorMsg);
                 throw new QueryDslFiltersException(errorMsg);
         }

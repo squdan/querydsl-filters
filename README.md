@@ -4,15 +4,15 @@ QueryDsl-Filters is an open-source library that extends QueryDsl framework funct
 programmers can use to execute database queries easily.
 
 [![Build Status](https://github.com/squdan/querydsl-filters/workflows/querydsl-filters/badge.svg)](https://github.com/squdan/querydsl-filters/actions)
-[![Coverage Status](https://coveralls.io/repos/github/squdan/querydsl-filters/badge.svg?branch=main)](https://coveralls.io/github/squdan/querydsl-filters?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/squdan/querydsl-filters/badge.svg?branch=master)](https://coveralls.io/github/squdan/querydsl-filters?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.squdan/querydsl-filters/badge.svg?style=flat-square&color=007ec6)](https://maven-badges.herokuapp.com/maven-central/io.github.squdan/querydsl-filters/)
 
 ## Requirements
 
 1. Java 17+
 2. Maven 3.9.5+
-3. [Querydsl 5.0.0+ (classifier: jakarta)](https://github.com/querydsl/querydsl?tab=readme-ov-file) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.querydsl/querydsl-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.querydsl/querydsl-core/)
-4. [Lombok 1.18.30+](https://github.com/projectlombok/lombok) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.projectlombok/lombok/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.projectlombok/lombok/)
+3. [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.querydsl/querydsl-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.querydsl/querydsl-core/) [Querydsl 5.0.0+ (classifier: jakarta)](https://github.com/querydsl/querydsl?tab=readme-ov-file)
+4. [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.projectlombok/lombok/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.projectlombok/lombok/) [Lombok 1.18.30+](https://github.com/projectlombok/lombok)
 
 ## Getting started
 
@@ -21,13 +21,11 @@ programmers can use to execute database queries easily.
 The first step is to include QueryDsl-Filters into your project. You can download Maven dependency from
 **Maven Central**.
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.squdan/querydsl-filters/badge.svg?style=flat-square&color=007ec6)](Pending maven url)
-
 ```maven
 <dependency>
     <groupId>io.github.squdan</groupId>
     <artifactId>querydsl-filters</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
 </dependency>
 ```
 
@@ -162,7 +160,7 @@ public final class QueryDslExampleEnumTypeManager implements QueryDslTypeManager
 ```
 
 Also you may want to configure your custom date format to be managed at **QueryDslDateTypeManager**. To achieve this,
-you just need to call to **DateTimeUtils.addDateTimeFormat** to register your date format.
+you just need to call to **DateTimeUtils.addDateTimeFormat** or **DateTimeUtils.addDateFormat** to register your date format.
 
 ```java
 package io.github.squdan.querydsl.filters.examples;
@@ -173,6 +171,7 @@ public class ConfigurationClass {
 
   public void configure() {
     DateTimeUtils.addDateTimeFormat(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+    DateTimeUtils.addDateFormat(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
   }
 }
 ```
@@ -212,8 +211,8 @@ There are 2 kind of filters available to use (check at **io.github.squdan.queryd
 
 * Simple-Operators: format **key{{operator}}value**. Example: key=value
 * Functions:
-    - Single parameter: format **{{function}}({{key}})**. Example: isNull(key)
-    - Double parameter: format **{{function}}({{key}}, {{value}})**. Example: equals(key, value)
+    - Single parameter: format **{{function_operator}}(key)**. Example: isNull(key)
+    - Double parameter: format **{{function_operator}}(key, value)**. Example: equals(key, value)
 
 ### Programming Dynamic Filters
 
@@ -319,22 +318,35 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+@RestController
+@RequestMapping(UserControllerInterface.BASE_PATH)
 @RequiredArgsConstructor
-public class TestingFilters {
+public class ExampleController {
 
+    // Constants
+    public static final String API_PATH = "/api/1.0";
+    public static final String API_RESOURCE = "examples";
+    public static final String BASE_PATH = ApiConfiguration.API_PATH + "/" + API_RESOURCE;
+    public static final String ENDPOINT_FIND_BY = "";
+    
     // Dependencies
     private final ExampleRepository exampleRepository;
-
-    public List<ExampleEntity> source() {
-        String notNullFilter = "isNull(test_key)";
-        String equalsFilter = "eq(test_key : test_value)";
-
-        return search(List.of(notNullFilter, equalsFilter));
-    }
-
-    public List<ExampleEntity> search(List<String> filters) {
-        List<QueryDslFilter> queryDslFilters = QueryDslFiltersMapper.map(filters);
-        return exampleRepository.findAll(queryDslFilters, null);
+    
+    @GetMapping(value = ExampleController.ENDPOINT_FIND_BY, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<UserDto>> findBy(
+            @Schema(
+                    description = "Filters to apply into the search. Example: key=value, isNull(key)",
+                    defaultValue = "key=value, contains(key, value)"
+            )
+            @RequestParam(value = ApiConfiguration.QUERY_FILTER_PARAM, required = false) final List<String> filters, final Pageable pageable
+    ) {
+      // Map List<String> filters to List<QueryDslFilters>
+      final List<QueryDslFilter> queryDslFilters = QueryDslFiltersMapper.map(filters);
+      
+      // Searching execution
+      final List<ExampleEntity> mayResults = exampleRepository.findAll(queryDslFilters, pageable);
+      
+      //...
     }
 }
 ```

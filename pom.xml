@@ -14,7 +14,7 @@
     <!-- Maven coordinates -->
     <groupId>io.github.squdan</groupId>
     <artifactId>querydsl-filters</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
 
     <!-- Project-level information -->
     <name>Querydsl-filters</name>

@@ -1,11 +1,15 @@
 package io.github.squdan.querydsl.filters.repository;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.core.types.dsl.StringPath;
 import io.github.squdan.querydsl.filters.QueryDslFilter;
 import io.github.squdan.querydsl.filters.repository.type.QueryDslTypeManager;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IteratorUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
@@ -14,8 +18,6 @@ import org.springframework.data.querydsl.binding.SingleValueBinding;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * Spring-Data repository with default implementation of findAll(List of QueryDslFilter filters, final Pageable pageable)
@@ -46,8 +48,8 @@ public interface QueryDslRepository<T, K extends EntityPathBase<T>>
      * @param pageable to apply (optional).
      * @return List entity found elements.
      */
-    default List<T> findAll(final List<QueryDslFilter> filters, final Pageable pageable) {
-        List<T> result = null;
+    default Page<T> findAll(final List<QueryDslFilter> filters, final Pageable pageable) {
+        Page<T> result = Page.empty();
 
         if (CollectionUtils.isNotEmpty(filters)) {
             final QueryDslPredicateBuilder<T> queryDslPredicateBuilder = new QueryDslPredicateBuilder<T>(getEntityType())
@@ -57,15 +59,17 @@ public interface QueryDslRepository<T, K extends EntityPathBase<T>>
                 queryDslPredicateBuilder.addCustomTypeManager(getCustomTypesManager());
             }
 
-            Iterable<T> queryResult;
-
             if (Objects.isNull(pageable)) {
-                queryResult = this.findAll(queryDslPredicateBuilder.build());
+                result = new PageImpl<>(IteratorUtils.toList(this.findAll(queryDslPredicateBuilder.build()).iterator()));
             } else {
-                queryResult = this.findAll(queryDslPredicateBuilder.build(), pageable);
+                result = this.findAll(queryDslPredicateBuilder.build(), pageable);
             }
-
-            result = StreamSupport.stream(queryResult.spliterator(), false).collect(Collectors.toList());
+        } else {
+            if (Objects.isNull(pageable)) {
+                result = new PageImpl<>(IteratorUtils.toList(this.findAll().iterator()));
+            } else {
+                result = this.findAll(new BooleanBuilder(), pageable);
+            }
         }
 
         return result;

@@ -12,12 +12,14 @@ import io.github.squdan.querydsl.filters.util.DateTimeUtils;
 import jakarta.transaction.Transactional;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
@@ -25,6 +27,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -34,54 +37,63 @@ public class UserRepositoryITest {
 
     // Constants
     private static final Instant NOW = Instant.now();
-    private static final UserEntity ADMIN = UserEntity.builder()
-            .id(UUID.fromString("24930b8e-ff6e-476a-8758-4bd3ff5ebd6b"))
-            .username("admin")
-            .password("test")
-            .role(Roles.ADMIN)
-            .name("Admin Name")
-            .lastName("Admin Lastname")
-            .savings(new BigDecimal("35.50"))
-            .createdOn(DateTimeUtils.toInstantUtc("2020-06-14T00:00:00Z"))
-            .lastUpdatedOn(DateTimeUtils.toInstantUtc("2021-11-27T16:41:32Z"))
-            .build();
-    private static final UserEntity USER = UserEntity.builder()
-            .id(UUID.fromString("26ad7565-ba11-4914-bf91-84557b8b8764"))
-            .username("user")
-            .password("test")
-            .role(Roles.USER)
-            .name("User Name")
-            .accounts(List.of(
-                    BankAccountEntity.builder()
-                            .id(BankAccountId.builder()
-                                    .bank("bank_name")
-                                    .account("ES12 1234 1234 12 1234567891")
-                                    .build()
-                            )
-                            .amount(new BigDecimal("4987.33"))
-                            .build(),
-                    BankAccountEntity.builder()
-                            .id(BankAccountId.builder()
-                                    .bank("bank_name")
-                                    .account("ES12 1234 1234 12 1234567892")
-                                    .build()
-                            )
-                            .amount(new BigDecimal("10"))
-                            .build(),
-                    BankAccountEntity.builder()
-                            .id(BankAccountId.builder()
-                                    .bank("bank_name2")
-                                    .account("ES12 1234 1234 12 1234567891")
-                                    .build()
-                            )
-                            .amount(new BigDecimal("10000.00"))
-                            .build()
-            ))
-            .build();
+    private static UserEntity ADMIN;
+    private static UserEntity USER;
 
     // Class to test
     @Autowired
     private UserRepository userRepository;
+
+    @BeforeAll
+    public static void init() {
+        DateTimeUtils.setTimezone(TimeZone.getTimeZone("UTC").toZoneId());
+
+        ADMIN = UserEntity.builder()
+                .id(UUID.fromString("24930b8e-ff6e-476a-8758-4bd3ff5ebd6b"))
+                .username("admin")
+                .password("test")
+                .role(Roles.ADMIN)
+                .name("Admin Name")
+                .lastName("Admin Lastname")
+                .savings(new BigDecimal("35.50"))
+                .createdOn(DateTimeUtils.toInstantUtc("2020-06-14T00:04:00Z"))
+                .lastUpdatedOn(DateTimeUtils.toInstantUtc("2021-11-27T16:41:32Z"))
+                .build();
+
+        USER = UserEntity.builder()
+                .id(UUID.fromString("26ad7565-ba11-4914-bf91-84557b8b8764"))
+                .username("user")
+                .password("test")
+                .role(Roles.USER)
+                .name("User Name")
+                .accounts(List.of(
+                        BankAccountEntity.builder()
+                                .id(BankAccountId.builder()
+                                        .bank("bank_name")
+                                        .account("ES12 1234 1234 12 1234567891")
+                                        .build()
+                                )
+                                .amount(new BigDecimal("4987.33"))
+                                .build(),
+                        BankAccountEntity.builder()
+                                .id(BankAccountId.builder()
+                                        .bank("bank_name")
+                                        .account("ES12 1234 1234 12 1234567892")
+                                        .build()
+                                )
+                                .amount(new BigDecimal("10"))
+                                .build(),
+                        BankAccountEntity.builder()
+                                .id(BankAccountId.builder()
+                                        .bank("bank_name2")
+                                        .account("ES12 1234 1234 12 1234567891")
+                                        .build()
+                                )
+                                .amount(new BigDecimal("10000.00"))
+                                .build()
+                ))
+                .build();
+    }
 
     private static Stream<Arguments> provideSingleFilterTestCases() {
         return Stream.of(
@@ -269,11 +281,11 @@ public class UserRepositoryITest {
     @MethodSource("provideSingleFilterTestCases")
     void test_map_singleFilter_returnExpectedFilter(final QueryDslFilter filters, final List<UserEntity> expectedResult) throws Exception {
         // Test execution
-        final List<UserEntity> mayResults = userRepository.findAll(List.of(filters), null);
+        final Page<UserEntity> mayResults = userRepository.findAll(List.of(filters), null);
 
         // Response validation
         Assertions.assertTrue(Objects.nonNull(mayResults), "Results searching with QueryDslFilters is null.");
-        Assertions.assertEquals(expectedResult.size(), mayResults.size(), "Results number aren't equals.");
+        Assertions.assertEquals(expectedResult.size(), mayResults.getTotalElements(), "Results number aren't equals.");
 
         mayResults.forEach(r -> {
             final UserEntity expectedUser = searchUserEntityById(expectedResult, r.getId());

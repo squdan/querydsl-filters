@@ -2,17 +2,16 @@ package io.github.squdan.querydsl.filters.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
 
 /**
  * Utility class to parse from String to Date.
@@ -21,6 +20,7 @@ import java.util.Objects;
  * <p>
  * Users can add their own formats using method: DateTimeUtils.addDateTimeFormat(DateTimeFormatter)
  */
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DateTimeUtils {
 
@@ -60,6 +60,16 @@ public final class DateTimeUtils {
         DATE_TIME_FORMATTERS.add(newDateTimeFormat);
     }
 
+    public static void setTimezone(final ZoneId zoneId) {
+        if (Objects.isNull(zoneId)) {
+            log.info("Configurando timezone 'UTC'.");
+            TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        } else {
+            log.info("Configurando timezone '{}'.", zoneId);
+            TimeZone.setDefault(TimeZone.getTimeZone(zoneId));
+        }
+    }
+
     /**
      * Returns received String as Instant.
      * <p>
@@ -78,7 +88,7 @@ public final class DateTimeUtils {
             final LocalDateTime localDateTime = toLocalDateTime(date);
 
             if (Objects.nonNull(localDateTime)) {
-                result = localDateTime.toInstant(ZoneOffset.UTC);
+                result = localDateTime.atZone(ZoneOffset.UTC).toInstant();
             }
 
             // Try to parse from String to LocalDate

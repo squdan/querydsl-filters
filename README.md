@@ -25,7 +25,7 @@ The first step is to include QueryDsl-Filters into your project. You can downloa
 <dependency>
     <groupId>io.github.squdan</groupId>
     <artifactId>querydsl-filters</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.4</version>
 </dependency>
 ```
 

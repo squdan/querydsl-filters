@@ -68,7 +68,7 @@ jobs:
 
       # If there are test errors, upload de reports
       - name: Upload test error reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: test-reports
